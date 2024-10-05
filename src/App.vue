@@ -8,7 +8,7 @@
           @click="rail = false"
       >
         <v-list-item
-            prepend-avatar="src/components/images/bird.jpeg"
+            :prepend-avatar="avatarPath"
             title="Hry pro děti"
             nav
         >
@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import '@mdi/font/css/materialdesignicons.css'
-
+const avatarPath = `${import.meta.env.BASE_URL}images/bird.jpeg`;
 const drawer = ref(true)
 const rail = ref(false)
 </script>

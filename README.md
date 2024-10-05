@@ -69,4 +69,23 @@ npm run lint
 npm install vuetify
 ```
 
-# vue-js__hry-pro-deti
+
+# Deployment:
+```
+npm run build
+```
+copy content from:
+```
+*/dist/
+```
+## .htaccess
+```
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /vuejs_hry/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /vuejs_hry/index.html [L]
+</IfModule>
+```
