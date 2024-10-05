@@ -15,6 +15,11 @@ const router = createRouter({
         component: () => import('../views/ScitaniOdecitani.vue')
     },
     {
+      path: '/road-map',
+      name: 'road-map',
+        component: () => import('../views/RoadMap.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting

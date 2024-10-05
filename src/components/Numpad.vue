@@ -1,24 +1,25 @@
 <template>
   <div class="numpad">
     <div class="button-row">
-      <v-btn @click="appendNumber(7)">7</v-btn>
-      <v-btn @click="appendNumber(8)">8</v-btn>
-      <v-btn @click="appendNumber(9)">9</v-btn>
+      <v-btn @click="appendNumber(7)"><span class="num-number">7</span></v-btn>
+      <v-btn @click="appendNumber(8)"><span class="num-number">8</span></v-btn>
+      <v-btn @click="appendNumber(9)"><span class="num-number">9</span></v-btn>
     </div>
     <div class="button-row">
-      <v-btn @click="appendNumber(4)">4</v-btn>
-      <v-btn @click="appendNumber(5)">5</v-btn>
-      <v-btn @click="appendNumber(6)">6</v-btn>
+      <v-btn @click="appendNumber(4)"><span class="num-number">4</span></v-btn>
+      <v-btn @click="appendNumber(5)"><span class="num-number">5</span></v-btn>
+      <v-btn @click="appendNumber(6)"><span class="num-number">6</span></v-btn>
     </div>
     <div class="button-row">
-      <v-btn @click="appendNumber(1)">1</v-btn>
-      <v-btn @click="appendNumber(2)">2</v-btn>
-      <v-btn @click="appendNumber(3)">3</v-btn>
+      <v-btn @click="appendNumber(1)"><span class="num-number">1</span></v-btn>
+      <v-btn @click="appendNumber(2)"><span class="num-number">2</span></v-btn>
+      <v-btn @click="appendNumber(3)"><span class="num-number">3</span></v-btn>
     </div>
     <div class="button-row">
-      <v-btn @click="appendNumber(0)">0</v-btn>
-      <v-btn @click="backspace" icon="mdi-backspace"></v-btn>
-      <v-btn @click="clearAll" icon="mdi-close-circle"></v-btn>
+      <v-btn @click="appendNumber(0)"><span class="num-number">0</span></v-btn>
+      <v-btn @click="backspace"><span class="num-number"><v-icon icon="mdi-backspace" color="blue"/></span></v-btn>
+      <v-btn @click="clearAll" ><span class="num-number"><v-icon icon="mdi-close-circle" color="red"/></span>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -70,7 +71,14 @@ watch(props, () => {
 
 .v-btn {
   height: 100%; /* Full height of the grid cell */
-  min-height: 50px;
+  min-height: 40px;
+  min-width: 40px;
   width: 100%; /* Full width of the grid cell */
+  padding: 0;
+}
+
+.num-number {
+  font-weight: bold;
+  font-size: 24px;
 }
 </style>
