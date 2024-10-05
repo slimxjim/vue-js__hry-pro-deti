@@ -10,6 +10,11 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/scitani-odecitani',
+      name: 'scitani-odecitani',
+        component: () => import('../views/ScitaniOdecitani.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting

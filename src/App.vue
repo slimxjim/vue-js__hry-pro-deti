@@ -36,6 +36,12 @@
               value="/about"
               router to="/about"
           ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-numeric"
+              title="Sčítání odečítání"
+              value="users"
+              router to="/scitani-odecitani"
+          ></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main>
