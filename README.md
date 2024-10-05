@@ -1,5 +1,9 @@
-# hry-pro-deti-vuejs
-# vue-js__hry-pro-deti
+### hry-pro-deti-vuejs | # vue-js__hry-pro-deti
+
+# How to RUN:
+```
+npm run dev -- --port 8000
+```
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -60,4 +64,9 @@ npm run test:e2e
 ```sh
 npm run lint
 ```
+# Next preparation
+```
+npm install vuetify
+```
+
 # vue-js__hry-pro-deti

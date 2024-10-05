@@ -28,3 +28,5 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+*.iml
+vite.config.ts.timestamp-1728137853771-f937254f29013.mjs
