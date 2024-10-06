@@ -71,7 +71,7 @@ watch(props, () => {
 
 .v-btn {
   height: 100%; /* Full height of the grid cell */
-  min-height: 40px;
+  min-height: 60px;
   min-width: 40px;
   width: 100%; /* Full width of the grid cell */
   padding: 0;
