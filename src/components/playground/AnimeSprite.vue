@@ -15,13 +15,14 @@
         transformOrigin: `${transformOrigin}`,
       }"
   />
-  <input type="range" step="20" min="0" max="200" v-model="speed" /> {{ speed }}
+<!--  <input type="range" step="20" min="0" max="200" v-model="speed" /> {{ speed }}-->
+  <input type="range" step="1" min="1" max="20" v-model="speed" /> {{ speed }}
   <!-- Tlačítko pro pauzování nebo spuštění animace -->
   <v-btn @click="togglePause">{{ isPaused ? 'Spustit' : 'Zastavit' }} animaci</v-btn>
 </template>
 
 <script setup lang="ts">
-import { useIntervalFn } from '@vueuse/core'; //npm i @vueuse/core
+import {useIntervalFn, useRafFn} from '@vueuse/core'; //npm i @vueuse/core
 import {defineProps, ref, watch} from "vue";
 
 const props = withDefaults(
@@ -32,7 +33,7 @@ const props = withDefaults(
       speed?: number;
     }>(),
     {
-      speed: 100, // Výchozí hodnota pro 'speed'
+      speed: 3, // Výchozí hodnota pro 'speed'
     }
 );
 
@@ -41,7 +42,7 @@ const activePosition = ref(0);
 const isPaused = ref(false);
 
 const speed = ref(props.speed);
-
+/*
 const { pause, resume, isActive } = useIntervalFn(() => {
   if (activePosition.value > -525) {
     activePosition.value -= 75;
@@ -49,6 +50,22 @@ const { pause, resume, isActive } = useIntervalFn(() => {
     activePosition.value = 0;
   }
 }, speed, {immediate: true});
+*/
+
+const framesComplete = ref(0);
+const { pause, resume, isActive } = useRafFn(() => {
+  // increment framesComplete each animation frame
+  framesComplete.value++;
+  // return early if frames complete is not a multiple of 10 (or speed.value)
+  // so that the postition is not altered until every 10th animation frame
+  if (framesComplete.value % speed.value) return;
+  if (activePosition.value > -525) {
+    activePosition.value -= 75;
+  } else {
+    activePosition.value = 0;
+  }
+});
+
 
 // Funkce pro přepnutí pauzy a spuštění animace
 const togglePause = () => {

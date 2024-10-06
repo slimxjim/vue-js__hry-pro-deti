@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <AnimeSprite :show-source-link="true" />
-    <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom right`" :speed="30"/>
+    <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom right`" :speed="5"/>
   </v-card>
 </template>
 
