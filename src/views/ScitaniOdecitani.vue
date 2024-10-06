@@ -109,7 +109,7 @@
             <hr v-if="index == 0" style="margin-bottom: 8px"/>
           </div>
         </div>
-        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>
+<!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
       </v-col>
     </v-row>
   </div>
@@ -118,7 +118,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Numpad from "@/components/Numpad.vue";
-import AnimeSprite from "@/components/playground/AnimeSprite.vue";
 
 const maxLives = 3;
 const confTimeLeft = 20;
