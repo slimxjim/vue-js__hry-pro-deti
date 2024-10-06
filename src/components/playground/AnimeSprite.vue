@@ -18,7 +18,7 @@
 <!--  <input type="range" step="20" min="0" max="200" v-model="speed" /> {{ speed }}-->
   <input type="range" step="1" min="1" max="20" v-model="speed" /> {{ speed }}
   <!-- Tlačítko pro pauzování nebo spuštění animace -->
-  <v-btn @click="togglePause">{{ isPaused ? 'Spustit' : 'Zastavit' }} animaci</v-btn>
+  <v-btn @click="togglePause">{{ isPaused ? 'Start' : 'Stop' }}</v-btn>
 </template>
 
 <script setup lang="ts">

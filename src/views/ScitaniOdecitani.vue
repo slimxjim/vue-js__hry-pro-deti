@@ -93,7 +93,6 @@
               </v-col>
             </v-row>
           </div>
-        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>
         </div>
       </v-col>
 
@@ -110,6 +109,7 @@
             <hr v-if="index == 0" style="margin-bottom: 8px"/>
           </div>
         </div>
+        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>
       </v-col>
     </v-row>
   </div>
