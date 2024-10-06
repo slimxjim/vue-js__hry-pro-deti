@@ -14,6 +14,11 @@ const router = createRouter({
         component: () => import('../views/ScitaniOdecitani.vue')
     },
     {
+      path: '/animation-playground',
+      name: 'animation-playground',
+        component: () => import('../views/AnimationPlayground.vue')
+    },
+    {
       path: '/road-map',
       name: 'road-map',
         component: () => import('../views/RoadMap.vue')

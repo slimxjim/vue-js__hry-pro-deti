@@ -93,9 +93,8 @@
               </v-col>
             </v-row>
           </div>
+        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>
         </div>
-
-
       </v-col>
 
       <!-- History container -->
@@ -114,12 +113,12 @@
       </v-col>
     </v-row>
   </div>
-
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Numpad from "@/components/Numpad.vue";
+import AnimeSprite from "@/components/playground/AnimeSprite.vue";
 
 const maxLives = 3;
 const confTimeLeft = 20;

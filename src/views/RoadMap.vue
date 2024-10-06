@@ -42,6 +42,12 @@
               value="users"
               router to="/scitani-odecitani"
           ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-multimedia"
+              title="Animace - hřiště"
+              value="users"
+              router to="/animation-playground"
+          ></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main>
