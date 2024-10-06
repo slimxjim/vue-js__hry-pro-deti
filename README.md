@@ -89,3 +89,19 @@ copy content from:
   RewriteRule . /vuejs_hry/index.html [L]
 </IfModule>
 ```
+
+# TODO:
+## vylepšit hru:
+- hráč proti PC, monster - obrázek
+- animace kulek, střelby: https://jsfiddle.net/5bcncsv2/- plusové příklady seberou příšeře jen třetinu damage
+- mínusové celé a mínusy přes desete budou za dvojnásobek
+- animace hráčova avatara, animace monster avatara: https://www.shutterstock.com/image-vector/goblin-character-ready-animation-mobile-applications-643122487
+- čím rychlejší budou odpovědi, tím ničivější budou - formát odměn: do 3s - 2x damage + život navíc, do 10s - 1.5x, nad 30s ztráta života, nad 60s ztráta života a heal příšeře
+- různé mody (0-10, 0-20, jen plus, jen mínus, kombinace)
+- přidat hru na trénink - tři chlívečky, rozklad čísel (trojúhelník, nahoře nejvyšší číslo)
+
+## Inspirations:
+- JS 3D (OMG): https://playground.babylonjs.com/#UK6WTT#8 (https://forum.babylonjs.com/t/create-a-simple-machine-gun/14771/2)
+- Blast off a rocket (JS) https://codepen.io/mel-ociraptor/pen/rGJLeN  
+  - **=> místo zabíjení monstra, start rakety a přistání**
+- Animation sprite: how to Vue: https://vueschool.io/articles/vuejs-tutorials/how-to-create-an-animated-sprite-with-vueuse/
