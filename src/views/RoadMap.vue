@@ -39,13 +39,19 @@
           <v-list-item
               prepend-icon="mdi-numeric"
               title="Sčítání odečítání"
-              value="users"
+              value="scitani-odecitani"
               router to="/scitani-odecitani"
+          ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-apple-keyboard-control"
+              title="Rozklad"
+              value="rozklad"
+              router to="/rozklad"
           ></v-list-item>
           <v-list-item
               prepend-icon="mdi-multimedia"
               title="Animace - hřiště"
-              value="users"
+              value="animace"
               router to="/animation-playground"
           ></v-list-item>
         </v-list>

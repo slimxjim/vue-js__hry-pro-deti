@@ -14,6 +14,11 @@ const router = createRouter({
         component: () => import('../views/ScitaniOdecitani.vue')
     },
     {
+      path: '/rozklad',
+      name: 'rozoklad',
+        component: () => import('../views/Rozklad.vue')
+    },
+    {
       path: '/animation-playground',
       name: 'animation-playground',
         component: () => import('../views/AnimationPlayground.vue')
