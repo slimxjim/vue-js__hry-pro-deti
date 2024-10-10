@@ -1,117 +1,133 @@
 <template>
-  <div class="info-panel">
-<!--    <h1>Počítací střílečka</h1>-->
-    <div class="players-panel">
+  <div @keydown.enter.prevent="triggerButton">
+
+    <div class="info-panel">
+  <!--    <h1>Počítací střílečka</h1>-->
+      <div class="players-panel">
+
+      </div>
+      <div class="history-panel">
+
+      </div>
+    </div>
+    <div class="control-panel">
 
     </div>
-    <div class="history-panel">
+    <div>
+      <v-row no-gutters>
+        <!-- Playboard container -->
+        <v-col cols="8" class="playboard-container">
+          <div class="playboard" >
+            <h2 style="text-align: center; font-weight: bold">Počítací střílečka</h2>
 
-    </div>
-  </div>
-  <div class="control-panel">
-
-  </div>
-  <div>
-    <v-row no-gutters>
-      <!-- Playboard container -->
-      <v-col cols="8" class="playboard-container">
-        <div class="playboard" >
-          <h2 style="text-align: center; font-weight: bold">Počítací střílečka</h2>
-
-          <div style="margin-top: 10px">
-            <v-row no-gutters>
-              <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-start w-100">
-                <v-card :class="[isActivePlayerClass('Tom'), 'card-player']">
-                  <div class="player">
-                    <h2>Tom</h2>
-                    <p>Životy: <span>{{ tomLives }}</span></p>
-                  </div>
-                </v-card>
-              </v-col>
-              <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-center w-100">
-                <v-card :class="[isActivePlayerClass('Protihráč'), 'card-player']">
-                  <div class="player">
-                    <h2>Protihráč</h2>
-                    <p>Životy: <span>{{ opponentLives }}</span></p>
-                  </div>
-                </v-card>
-              </v-col>
-            </v-row>
-            <div style="display: flex; flex-grow: 1">
-              <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+            <div style="margin-top: 10px">
+              <v-row no-gutters>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <v-card :class="[isActivePlayerClass('Tom'), 'card-player']">
+                    <div class="player">
+                      <h2>Tom</h2>
+                      <p>Životy: <span>{{ tomLives }}</span></p>
+                    </div>
+                  </v-card>
+                </v-col>
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-center w-100">
+                  <v-card :class="[isActivePlayerClass('Protihráč'), 'card-player']">
+                    <div class="player">
+                      <h2>Protihráč</h2>
+                      <p>Životy: <span>{{ opponentLives }}</span></p>
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-row>
               <div style="display: flex; flex-grow: 1">
-                <div id="question">{{ question }} = {{ userAnswer ?? '?'}}</div>
-              </div>
-              <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
-              <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px">
-                <div id="timer">Čas: {{ timeLeft }}</div>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <div style="display: flex; flex-grow: 1">
+                  <div id="question">{{ question }} = {{ userAnswer ?? '?'}}</div>
+                </div>
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px">
+                  <div id="timer">Čas: {{ timeLeft }}</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <p style="font-weight: bold; text-align: center; margin: 10px 0">{{ message }}</p>
+            <p style="font-weight: bold; text-align: center; margin: 10px 0">{{ message }}</p>
 
-          <div class="pa-1 ma-1">
-            <Numpad v-model:userAnswer="userAnswer" />
-          </div>
-
-          <div style="margin-top: 20px; padding: 10px;">
-            <v-row>
-              <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-start w-100">
-                <v-btn class="w-100" @click="handleSubmit" :disabled="!playersAreAlive()" color="green">Odpovědět</v-btn>
-              </v-col>
-            </v-row>
-            <v-row style="margin-top: 30px">
-              <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-center w-100">
-                <v-btn class="w-100" @click="togglePause" :disabled="!playersAreAlive()">
-                  <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
-                </v-btn>
-              </v-col>
-
-              <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-end w-100">
-                <v-btn class="w-100" @click="resetGame" color="#333333">Reset</v-btn>
-              </v-col>
-            </v-row>
-          </div>
-          <div style="margin-top: 20px; padding: 10px;">
-            <v-row no-gutters>
-              <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-start w-100">
-                <!-- Číselný vstup pro nastavení času -->
-                <v-text-field
-                    v-model="timeSetting"
-                    label="Nastavte čas (s)"
-                    type="number"
-                    :min="1"
-                    outlined
-                />
-              </v-col>
-            </v-row>
-          </div>
-        </div>
-      </v-col>
-
-      <!-- History container -->
-      <v-col cols="4" class="history-container">
-        <div class="history">
-          <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
-          <div v-for="(entry, index) in history" :key="index" class="history-entry">
-            <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal' , fontSize: index === 0 ? '14px' : '10px'}">
-              <span :style="{ color: entry.player === 'Tom' ? 'blue' : 'black' }">{{ entry.player.charAt(0) }}:</span>
-              <span>{{ entry.question }}</span>
-              <span :style="{ color: entry.isCorrect ? 'green' : 'red' }">= {{ entry.answer }}</span>
+            <div class="pa-1 ma-1">
+              <Numpad v-model:userAnswer="userAnswer" />
             </div>
-            <hr v-if="index == 0" style="margin-bottom: 8px"/>
+
+            <div style="margin-top: 20px; padding: 10px;">
+              <v-row>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <v-btn class="w-100" @click="handleSubmit" :disabled="!playersAreAlive()" color="green">Odpovědět</v-btn>
+                </v-col>
+              </v-row>
+              <v-row style="margin-top: 30px">
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-center w-100">
+                  <v-btn class="w-100" @click="togglePause" :disabled="!playersAreAlive()">
+                    <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
+                  </v-btn>
+                </v-col>
+
+                <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-end w-100">
+                  <v-btn class="w-100" @click="resetGame" color="#333333">Reset</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+            <div style="margin-top: 20px; padding: 10px;">
+              <v-row no-gutters>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <!-- Číselný vstup pro nastavení času -->
+                  <v-text-field
+                      v-model="timeSetting"
+                      label="Nastavte čas (s)"
+                      type="number"
+                      :min="1"
+                      outlined
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col v-for="(crit, index) in criterieasLevels" :key="index">
+                  <v-btn class="w-100" @click="changeLevel(crit)" color="#333333">{{ crit.name }}</v-btn>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <div>{{ getCrieteriaInfo(currentCriteria) }}</div>
+                </v-col>
+              </v-row>
+            </div>
           </div>
-        </div>
-<!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
-      </v-col>
-    </v-row>
+        </v-col>
+
+        <!-- History container -->
+        <v-col cols="4" class="history-container">
+          <div class="history">
+            <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
+            <div v-for="(entry, index) in history" :key="index" class="history-entry">
+              <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal' , fontSize: index === 0 ? '14px' : '10px'}">
+                <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
+                <span>{{ entry.question }}</span> = <span v-if="entry.isCorrect" class="history-record-correct-answer">{{ entry.userAnswer }}</span>
+                <span v-if="!entry.isCorrect">
+                  <span class="history-record-wrong-answer">{{ entry.userAnswer ?? '×'}} </span> <span style="margin: 0 10px"> => </span><span class="history-record-correct-answer">{{ entry.correctAnswer}}</span>
+                </span>
+
+              </div>
+              <hr v-if="index == 0" style="margin-bottom: 8px"/>
+            </div>
+          </div>
+  <!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -119,8 +135,124 @@
 import { ref, onMounted } from 'vue'
 import Numpad from "@/components/Numpad.vue";
 
+
+enum ESignType {
+  PLUS,
+  MINUS,
+  PLUS_MINUS
+}
+
+function getSign(sign: ESignType): string {
+  switch (sign) {
+    case ESignType.PLUS:
+      return '+';
+    case ESignType.MINUS:
+      return '-';
+    case ESignType.PLUS_MINUS:
+      return Math.random() > 0.5 ? '+' : '-';
+  }
+}
+
+function printSign(sign: ESignType): string {
+  switch (sign) {
+    case ESignType.PLUS:
+      return '+';
+    case ESignType.MINUS:
+      return '-';
+    case ESignType.PLUS_MINUS:
+      return '+/-';
+  }
+}
+
+interface Interval {
+  min: number;
+  max: number;
+}
+
+interface Criteria {
+  name: string,
+  intervalA: Interval;
+  sign: ESignType;
+  intervalB: Interval;
+  intervalResult: Interval;
+}
+
+function getCrieteriaInfo(criteria: Criteria): string {
+  // return criteria.name + ': ' +
+  return `${criteria.name}: <${criteria.intervalA.min}, ${criteria.intervalA.max}> ${printSign(criteria.sign)} <${criteria.intervalB.min}, ${criteria.intervalB.max}> = <${criteria.intervalResult.min}, ${criteria.intervalResult.max}>`;
+}
+
+interface Equation {
+  numA: number,
+  numB: number,
+  sign: string,
+  result: number,
+}
+
+interface HistoryRecord {
+  equation: Equation | null,
+  question: string,
+  userAnswer: number | undefined,
+  correctAnswer: number | null,
+  isCorrect: boolean | null,
+  playerName: string,
+}
+
+// CONFIGURATION
 const maxLives = 3;
 const confTimeLeft = 20;
+
+const crit_Level1_plus: Criteria = {
+  name: 'Level 1: 0,5 +',
+  intervalA: { min: 0, max: 5 },
+  sign: ESignType.PLUS,
+  intervalB: { min: 0, max: 5 },
+  intervalResult: { min: 0, max: 10 }
+};
+const crit_Level2_plus_0_10: Criteria = {
+  name: 'Level 2: 0,10 +',
+  intervalA: { min: 0, max: 10},
+  sign: ESignType.PLUS,
+  intervalB: { min: 0, max: 10},
+  intervalResult: { min: 0, max: 10 }
+};
+const crit_Level3_minus_0_5: Criteria = {
+  name: 'Level 3: 0,5 -',
+  intervalA: { min: 0, max: 5},
+  sign: ESignType.MINUS,
+  intervalB: { min: 0, max: 5},
+  intervalResult: { min: 0, max: 10 }
+};
+const crit_Level4_minus_0_10: Criteria = {
+  name: 'Level 4: 0,10 -',
+  intervalA: { min: 0, max: 10},
+  sign: ESignType.MINUS,
+  intervalB: { min: 0, max: 10},
+  intervalResult: { min: 0, max: 10 }
+};
+const crit_Level4_minus_1_10: Criteria = {
+  name: 'Level 4: 1,10 -',
+  intervalA: { min: 2, max: 10},
+  sign: ESignType.MINUS,
+  intervalB: { min: 2, max: 10},
+  intervalResult: { min: 1, max: 10 }
+};
+const crit_Level5_both_0_10: Criteria = {
+  name: 'Level 5: 0,10 +/-',
+  intervalA: { min: 0, max: 10},
+  sign: ESignType.PLUS_MINUS,
+  intervalB: { min: 0, max: 10},
+  intervalResult: { min: 0, max: 10 }
+};
+
+const criterieasLevels = ref<Array<Criteria>> ([
+  crit_Level1_plus,
+  crit_Level2_plus_0_10,
+  crit_Level3_minus_0_5,
+  crit_Level4_minus_0_10,
+  crit_Level4_minus_1_10,
+  crit_Level5_both_0_10,
+]);
 
 const tomLives = ref(maxLives)
 const opponentLives = ref(maxLives)
@@ -128,12 +260,61 @@ const currentPlayer = ref('Tom')
 const userAnswer = ref<number|undefined>()
 const question = ref('')
 const currentAnswer = ref<number | null>(null)
+const currentEquation = ref<Equation | null>(null);
 const timer = ref<number | null>(null)
 const timeLeft = ref(confTimeLeft)
 const timeSetting = ref(confTimeLeft)
-const isPaused = ref(false)
+const IS_PAUSED_INIT = true;
+const isPaused = ref(IS_PAUSED_INIT)
 const message = ref('')
-const history = ref<Array<{ player: string, question: string, answer: number, isCorrect: boolean }>>([])
+const history = ref<Array<HistoryRecord>>([])
+
+const currentCriteria = ref<Criteria>(crit_Level1_plus);
+
+
+
+const getRandomIntegerInclusive = (interval: Interval): number => {
+  return getRandomIntegerInclusiveMinMax(interval.min, interval.max);
+}
+
+const getRandomIntegerInclusiveMinMax = (min: number, max: number): number => {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function generateQuestionEquation(criteria: Criteria): Equation {
+  let num1: number, num2: number, sign: string, isAddition: boolean;
+  do {
+    num1 = getRandomIntegerInclusive(criteria.intervalA);
+    num2 = getRandomIntegerInclusive(criteria.intervalB);
+    sign = getSign(criteria.sign);
+    isAddition = sign === '+';
+
+    question.value = isAddition ? `${num1} + ${num2}` : `${num1} - ${num2}`;
+    currentAnswer.value = isAddition ? num1 + num2 : num1 - num2;
+
+  } while (
+         currentAnswer.value! < criteria.intervalResult.min
+      || currentAnswer.value! > criteria.intervalResult.max
+      || (currentAnswer.value === 0 && (num1 === 0 || num2 === 0))
+      );
+
+  const equation: Equation = {
+    numA: num1,
+    sign: sign,
+    numB: num2,
+    result: currentAnswer.value
+  };
+
+  currentEquation.value = equation;
+  return equation;
+}
+
+function changeLevel(criteria: Criteria) {
+  currentCriteria.value = criteria;
+}
 
 function generateQuestion() {
   let num1, num2, isAddition
@@ -158,7 +339,8 @@ function isActivePlayerClass(player: string): string {
 }
 
 function startTurn() {
-  generateQuestion()
+  //generateQuestion()
+  generateQuestionEquation(currentCriteria.value);
   userAnswer.value = undefined
   startTimer()
 }
@@ -218,7 +400,7 @@ function resetGame() {
   tomLives.value = maxLives
   opponentLives.value = maxLives
   currentPlayer.value = 'Tom'
-  isPaused.value = false
+  isPaused.value = IS_PAUSED_INIT;
   message.value = ''
   history.value = []
   startTurn()
@@ -232,7 +414,15 @@ function addHistoryEntry(isCorrect: boolean) {
     answer: currentAnswer.value!,
     isCorrect
   };
-  history.value.unshift(entry)
+  const historyRecord: HistoryRecord = {
+    equation: currentEquation.value,
+    question: question.value,
+    playerName: currentPlayer.value,
+    userAnswer: userAnswer.value,
+    correctAnswer: currentAnswer.value,
+    isCorrect: isCorrect
+  }
+  history.value.unshift(historyRecord)
 }
 
 function handleSubmit() {
@@ -257,6 +447,13 @@ function togglePause() {
 onMounted(() => {
   resetGame()
 })
+
+// Přidejte klávesovou událost do okna, pokud potřebujete, aby fungovala i mimo div
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    handleSubmit(); // Zavolá handleSubmit při stisknutí Enter
+  }
+});
 </script>
 
 <style scoped>
@@ -304,7 +501,6 @@ h3 {
 }
 .history-entry span {
   display: inline-block;
-  margin-left: 10px;
 }
 /* Playboard má vyplňovat celý levý prostor */
 .playboard-container {
@@ -338,5 +534,17 @@ h3 {
 .history h3 {
   font-size: 14px;
   font-weight: bold;
+}
+
+span.history-record-wrong-answer {
+  /* text-decoration: line-through; */
+  font-style: italic;
+  color: red;
+  margin: 0 !important;
+}
+
+span.history-record-correct-answer {
+  color: green;
+  margin: 0 !important;
 }
 </style>
