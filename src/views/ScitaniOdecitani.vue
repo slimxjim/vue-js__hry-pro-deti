@@ -94,8 +94,6 @@
             </v-row>
           </div>
         </div>
-
-
       </v-col>
 
       <!-- History container -->
@@ -111,10 +109,10 @@
             <hr v-if="index == 0" style="margin-bottom: 8px"/>
           </div>
         </div>
+<!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
       </v-col>
     </v-row>
   </div>
-
 </template>
 
 <script setup lang="ts">

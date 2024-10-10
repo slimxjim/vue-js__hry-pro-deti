@@ -105,3 +105,6 @@ copy content from:
 - Blast off a rocket (JS) https://codepen.io/mel-ociraptor/pen/rGJLeN  
   - **=> místo zabíjení monstra, start rakety a přistání**
 - Animation sprite: how to Vue: https://vueschool.io/articles/vuejs-tutorials/how-to-create-an-animated-sprite-with-vueuse/
+- https://www.freeiconspng.com/ obrázky
+- [Part 1: Advanced Animations with Animation Sprites in Vue.js](https://medium.com/@dalilaba/part-1-advanced-animations-with-animation-sprites-in-vue-js-89b14ea756c8)
+  -  https://github.com/dalilaavdukic/vue-animation-sprites
