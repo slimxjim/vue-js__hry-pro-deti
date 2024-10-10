@@ -450,10 +450,14 @@ onMounted(() => {
 
 // Přidejte klávesovou událost do okna, pokud potřebujete, aby fungovala i mimo div
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
+  if (event.key === 'Enter' && (tomLives.value > 0 || opponentLives.value > 0)) {
     handleSubmit(); // Zavolá handleSubmit při stisknutí Enter
   }
 });
+function triggerButton() {
+  //handleSubmit(); // Volá se kliknutí na tlačítko
+}
+
 </script>
 
 <style scoped>
