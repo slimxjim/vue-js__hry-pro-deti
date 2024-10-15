@@ -1,16 +1,21 @@
 <template>
   <div>TIME = {{ time }}.</div>
+  <div>
+    <button @click="start">Start</button> |
+    <button @click="stop">Stop</button> |
+    <button @click="reset">Reset</button> |
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from 'vue';
+import {ref} from 'vue';
 
-const props = defineProps<{
-  hours: boolean;
-  minutes: boolean;
-}>();
+// const props = defineProps<{
+//   hours: boolean;
+//   minutes: boolean;
+// }>();
 
-const time = ref<string | null>(null);
+const time = ref<string>('NaN');
 const isRunning = ref<boolean>(false);
 const startTime = ref<number | null>(null);
 const times = ref<number[]>([0, 0, 0, 0]);
@@ -20,12 +25,8 @@ const start = () => {
   if (isRunning.value) throw new Error('Stopwatch has already started.');
   isRunning.value = true;
   if (!startTime.value) startTime.value = performance.now();
-  emit('start', startTime.value);
+  // emit('start', startTime.value);
   frameId.value = requestAnimationFrame(step);
-};
-
-const lap = (id: number) => {
-  emit('lap', performance.now(), time.value, id);
 };
 
 const stop = () => {
@@ -33,7 +34,7 @@ const stop = () => {
   isRunning.value = false;
   startTime.value = null;
   times.value = [0, 0, 0, 0];
-  emit('stop', performance.now(), time.value);
+  // emit('stop', performance.now(), time.value);
   if (frameId.value !== null) {
     cancelAnimationFrame(frameId.value);
   }
@@ -46,19 +47,26 @@ const reset = () => {
   time.value = formatTimes();
 };
 
-const formatTimes = (timesArray = times.value) => {
+function formatTimes(timesArray = times.value): string {
   const hours = pad0(timesArray[0], 2);
   const minutes = pad0(timesArray[1], 2);
   const seconds = pad0(timesArray[2], 2);
   const milliseconds = pad0(Math.trunc(timesArray[3] % 100), 2);
-  if (props.hours) {
-    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
-  }
-  if (props.minutes) {
-    return `${minutes}:${seconds}:${milliseconds}`;
-  }
+
+  // if (props.hours) {
+  //   const ret = `${hours}:${minutes}:${seconds}:${milliseconds}`;
+  //   console.log('formatTimes = ', ret);
+  //   return ret;
+  // }
+  //
+  // if (props.minutes) {
+  //   const ret = `${minutes}:${seconds}:${milliseconds}`;
+  //   console.log('formatTimes = ', ret);
+  //   return ret;
+  // }
+
   return `${seconds}:${milliseconds}`;
-};
+}
 
 const pad0 = (value: number, count: number) => {
   let result = value.toString();
@@ -95,7 +103,7 @@ const calculate = (timestamp: number) => {
 };
 
 // Emit function to be defined in parent component
-const emit = defineEmits(['start', 'lap', 'stop']);
-defineExpose({ start, stop, lap })
+// const emit = defineEmits(['start', 'stop']);
+// defineExpose({ start, stop })
 
 </script>

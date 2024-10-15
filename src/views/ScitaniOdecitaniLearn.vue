@@ -99,22 +99,7 @@
         <v-col cols="4" class="history-container">
           <div class="history">
             <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
-            <h4>hhh {{ watch.milliseconds }} .. {{ time.seconds }}</h4>
-            <p><Stopwatch
-                v-show="isStarted || isFinished"
-                ref="stopWatch"
-                class="digits"
-                :hours="false"
-                :minutes="true"
-                @start="setStartTime"
-                @stop="setStopTime"
-                @lap="setLapTime"
-            />
-
-              <button @click="startWatch">Start</button> |
-              <button @click="lapWatch">Lap</button> |
-              <button @click="stopWatch">Stop</button> |
-              <button @click="resetWatch">Reset</button> |
+            <p><StopWatch/>
             </p>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
               <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
@@ -146,58 +131,7 @@ import {
   type HistoryRecord,
   type Interval, padWithNonBreakingSpaces
 } from "@/composable/AddSubUtils";
-import {useStopwatch} from "@/composable/useStopwatch";
-import Stopwatch from "@/components/Stopwatch.vue";
-
-const { start, stop } = useStopwatch();
-const { time } = useStopwatch();
-
-const watch = ref(time);
-
-const stopWatch = ref(null);
-const isStarted = ref(false);
-const isFinished = ref(false);
-
-// Functions to control the stopwatch
-function startWatch() {
-  if (!isStarted.value) {
-    stopWatch.value?.start();
-    isStarted.value = true; // Update the started state
-  }
-}
-
-function lapWatch() {
-  if (isStarted.value) {
-    stopWatch.value?.lap('42'); // Replace '42' with a dynamic value if needed
-  }
-}
-
-function stopWatchFn() {
-  if (isStarted.value) {
-    stopWatch.value?.stop();
-    isStarted.value = false; // Update the started state
-    isFinished.value = true; // Mark the watch as finished if necessary
-  }
-}
-
-function resetWatch() {
-  stopWatch.value?.reset();
-  isStarted.value = false; // Reset the started state
-  isFinished.value = false; // Reset the finished state if needed
-}
-
-// Callbacky
-function setStartTime(timestamp: number) {
-  console.log('Start time:', timestamp);
-}
-
-function setStopTime(timestamp: number, formattedTime: string) {
-  console.log('Stop time:', timestamp, formattedTime);
-}
-
-function setLapTime(timestamp: number, formattedTime: string, id: string) {
-  console.log('Lap time:', timestamp, formattedTime, id);
-}
+import StopWatch from "@/components/StopWatch.vue";
 
 
 // CONFIGURATION
@@ -312,7 +246,6 @@ function newQuestion() {
 }
 
 function startTimer() {
-  start();
   if (timer.value) clearInterval(timer.value)
   timeLeft.value = timeSetting.value || 10
   timer.value = setInterval(() => {
@@ -359,7 +292,6 @@ function addHistoryEntry(isCorrect: boolean) {
 }
 
 function handleSubmit() {
-  stop();
   console.log("handle Submit")
   clearInterval(timer.value!)
   const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
