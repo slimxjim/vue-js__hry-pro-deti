@@ -94,6 +94,7 @@
                   />
                 </v-col>
               </v-row>
+              <h3>Levely</h3>
               <v-row>
                 <v-col v-for="(crit, index) in criterieasLevels" :key="index">
                   <v-btn class="w-100" @click="changeLevel(crit)" color="#333333">{{ crit.name }}</v-btn>
@@ -134,69 +135,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Numpad from "@/components/Numpad.vue";
-
-
-enum ESignType {
-  PLUS,
-  MINUS,
-  PLUS_MINUS
-}
-
-function getSign(sign: ESignType): string {
-  switch (sign) {
-    case ESignType.PLUS:
-      return '+';
-    case ESignType.MINUS:
-      return '-';
-    case ESignType.PLUS_MINUS:
-      return Math.random() > 0.5 ? '+' : '-';
-  }
-}
-
-function printSign(sign: ESignType): string {
-  switch (sign) {
-    case ESignType.PLUS:
-      return '+';
-    case ESignType.MINUS:
-      return '-';
-    case ESignType.PLUS_MINUS:
-      return '+/-';
-  }
-}
-
-interface Interval {
-  min: number;
-  max: number;
-}
-
-interface Criteria {
-  name: string,
-  intervalA: Interval;
-  sign: ESignType;
-  intervalB: Interval;
-  intervalResult: Interval;
-}
-
-function getCrieteriaInfo(criteria: Criteria): string {
-  // return criteria.name + ': ' +
-  return `${criteria.name}: <${criteria.intervalA.min}, ${criteria.intervalA.max}> ${printSign(criteria.sign)} <${criteria.intervalB.min}, ${criteria.intervalB.max}> = <${criteria.intervalResult.min}, ${criteria.intervalResult.max}>`;
-}
-
-interface Equation {
-  numA: number,
-  numB: number,
-  sign: string,
-  result: number,
-}
-
-interface HistoryRecord {
-  equation: Equation | null,
-  question: string,
-  userAnswer: number | undefined,
-  correctAnswer: number | null,
-  isCorrect: boolean | null,
-  playerName: string,
-}
+import {
+  type Criteria,
+  type Equation,
+  ESignType,
+  getCrieteriaInfo, getSign,
+  type HistoryRecord,
+  type Interval
+} from "@/composable/AddSubUtils";
 
 // CONFIGURATION
 const maxLives = 3;
@@ -314,6 +260,7 @@ function generateQuestionEquation(criteria: Criteria): Equation {
 
 function changeLevel(criteria: Criteria) {
   currentCriteria.value = criteria;
+  newQuestion();
 }
 
 function generateQuestion() {
@@ -339,10 +286,14 @@ function isActivePlayerClass(player: string): string {
 }
 
 function startTurn() {
-  //generateQuestion()
-  generateQuestionEquation(currentCriteria.value);
+  newQuestion();
   userAnswer.value = undefined
   startTimer()
+}
+
+function newQuestion() {
+  //generateQuestion()
+  generateQuestionEquation(currentCriteria.value);
 }
 
 function startTimer() {

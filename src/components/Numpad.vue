@@ -18,18 +18,17 @@
     <div class="button-row">
       <v-btn @click="appendNumber(0)"><span class="num-number">0</span></v-btn>
       <v-btn @click="backspace"><span class="num-number"><v-icon icon="mdi-backspace" color="blue"/></span></v-btn>
-      <v-btn @click="clearAll" ><span class="num-number"><v-icon icon="mdi-close-circle" color="red"/></span>
-      </v-btn>
+      <v-btn @click="clearAll"><span class="num-number"><v-icon icon="mdi-close-circle" color="red"/></span></v-btn>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch } from 'vue';
+import { ref, defineProps, watch, onMounted, onBeforeUnmount } from 'vue';
 
 // Příjem prop userAnswer
 const props = defineProps<{
-  userAnswer: number|undefined;
+  userAnswer: number | undefined;
 }>();
 
 // Dynamické nastavení userAnswer
@@ -41,17 +40,32 @@ function appendNumber(num: number) {
 
 function backspace() {
   const newValue = Math.floor((props.userAnswer ?? 0) / 10); // Odstranění posledního čísla
-  emit('update:userAnswer', newValue != 0 ? newValue : undefined);
+  emit('update:userAnswer', newValue !== 0 ? newValue : undefined);
 }
 
 function clearAll() {
   emit('update:userAnswer', undefined); // Resetování na 0
 }
 
+const handleKeyPress = (event: KeyboardEvent) => {
+  const key = event.key;
+  const num = parseInt(key, 10);
+  if (!isNaN(num) && num >= 0 && num <= 9) {
+    appendNumber(num); // Call appendNumber if the key pressed is a number
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress); // Add event listener on mount
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyPress); // Clean up event listener
+});
+
 watch(props, () => {
   //console.log(`props.userAnswer ${props.userAnswer}`)
-})
-
+});
 </script>
 
 <style scoped>
