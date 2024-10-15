@@ -37,6 +37,12 @@
               router to="/about"
           ></v-list-item>
           <v-list-item
+              prepend-icon="mdi-school"
+              title="Sčítání odečítání - UČENÍ"
+              value="scitani-odecitani-uceni"
+              router to="/scitani-odecitani-uceni"
+          ></v-list-item>
+          <v-list-item
               prepend-icon="mdi-numeric"
               title="Sčítání odečítání"
               value="scitani-odecitani"

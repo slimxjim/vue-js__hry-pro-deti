@@ -1,0 +1,488 @@
+<template>
+  <div @keydown.enter.prevent="triggerButton">
+
+    <div class="info-panel">
+  <!--    <h1>Počítací střílečka</h1>-->
+      <div class="players-panel">
+
+      </div>
+      <div class="history-panel">
+
+      </div>
+    </div>
+    <div class="control-panel">
+
+    </div>
+    <div>
+      <v-row no-gutters>
+        <!-- Playboard container -->
+        <v-col cols="8" class="playboard-container">
+          <div class="playboard" >
+            <h2 style="text-align: center; font-weight: bold">Počítací střílečka</h2>
+
+            <div style="margin-top: 10px">
+              <v-row no-gutters>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <v-card :class="[isActivePlayerClass('Tom'), 'card-player']">
+                    <div class="player">
+                      <h2>Tom</h2>
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <div style="display: flex; flex-grow: 1">
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <div style="display: flex; flex-grow: 1">
+                  <div id="question">{{ question }} = {{ userAnswer ?? '?'}}</div>
+                </div>
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px">
+                  <div id="timer">Čas: {{ timeLeft }}</div>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-weight: bold; text-align: center; margin: 10px 0">{{ message }}</p>
+
+            <div class="pa-1 ma-1">
+              <Numpad v-model:userAnswer="userAnswer" />
+            </div>
+
+            <div style="margin-top: 20px; padding: 10px;">
+              <v-row>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <v-btn class="w-100" @click="handleSubmit" color="green">Odpovědět</v-btn>
+                </v-col>
+              </v-row>
+              <v-row style="margin-top: 30px">
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-center w-100">
+                  <v-btn class="w-100" @click="togglePause" >
+                    <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
+                  </v-btn>
+                </v-col>
+
+                <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-end w-100">
+                  <v-btn class="w-100" @click="resetGame" color="#333333">Reset</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+            <div style="margin-top: 20px; padding: 10px;">
+              <v-row no-gutters>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <!-- Číselný vstup pro nastavení času -->
+                  <v-text-field
+                      v-model="timeSetting"
+                      label="Nastavte čas (s)"
+                      type="number"
+                      :min="1"
+                      outlined
+                  />
+                </v-col>
+              </v-row>
+              <h3>Učení</h3>
+              <table>
+                <tr v-for="(eq, index) in listToLearn" :key="index" style="text-align: center">
+                  <td>{{padWithNonBreakingSpaces(index, 3)}}:</td> <td>{{eq.numA}}</td> <td> {{eq.sign}} </td> <td>{{eq.numB}}</td> <td> =</td> <td>{{eq.result}}</td>
+                </tr>
+
+              </table>
+            </div>
+          </div>
+        </v-col>
+
+        <!-- History container -->
+        <v-col cols="4" class="history-container">
+          <div class="history">
+            <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
+            <h4>hhh {{ watch.milliseconds }} .. {{ time.seconds }}</h4>
+            <p><Stopwatch
+                v-show="isStarted || isFinished"
+                ref="stopWatch"
+                class="digits"
+                :hours="false"
+                :minutes="true"
+                @start="setStartTime"
+                @stop="setStopTime"
+                @lap="setLapTime"
+            />
+
+              <button @click="startWatch">Start</button> |
+              <button @click="lapWatch">Lap</button> |
+              <button @click="stopWatch">Stop</button> |
+              <button @click="resetWatch">Reset</button> |
+            </p>
+            <div v-for="(entry, index) in history" :key="index" class="history-entry">
+              <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
+                <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
+                <span>{{ entry.question }}</span> = <span v-if="entry.isCorrect" class="history-record-correct-answer">{{ entry.userAnswer }}</span>
+                <span v-if="!entry.isCorrect">
+                  <span class="history-record-wrong-answer">{{ entry.userAnswer ?? '×'}} </span> <span style="margin: 0 10px"> => </span><span class="history-record-correct-answer">{{ entry.correctAnswer}}</span>
+                </span>
+
+              </div>
+              <hr v-if="index == 0" style="margin-bottom: 8px"/>
+            </div>
+          </div>
+  <!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
+        </v-col>
+      </v-row>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import Numpad from "@/components/Numpad.vue";
+import {
+  type Criteria,
+  type Equation,
+  ESignType,
+  getCrieteriaInfo, getSign,
+  type HistoryRecord,
+  type Interval, padWithNonBreakingSpaces
+} from "@/composable/AddSubUtils";
+import {useStopwatch} from "@/composable/useStopwatch";
+import Stopwatch from "@/components/Stopwatch.vue";
+
+const { start, stop } = useStopwatch();
+const { time } = useStopwatch();
+
+const watch = ref(time);
+
+const stopWatch = ref(null);
+const isStarted = ref(false);
+const isFinished = ref(false);
+
+// Functions to control the stopwatch
+function startWatch() {
+  if (!isStarted.value) {
+    stopWatch.value?.start();
+    isStarted.value = true; // Update the started state
+  }
+}
+
+function lapWatch() {
+  if (isStarted.value) {
+    stopWatch.value?.lap('42'); // Replace '42' with a dynamic value if needed
+  }
+}
+
+function stopWatchFn() {
+  if (isStarted.value) {
+    stopWatch.value?.stop();
+    isStarted.value = false; // Update the started state
+    isFinished.value = true; // Mark the watch as finished if necessary
+  }
+}
+
+function resetWatch() {
+  stopWatch.value?.reset();
+  isStarted.value = false; // Reset the started state
+  isFinished.value = false; // Reset the finished state if needed
+}
+
+// Callbacky
+function setStartTime(timestamp: number) {
+  console.log('Start time:', timestamp);
+}
+
+function setStopTime(timestamp: number, formattedTime: string) {
+  console.log('Stop time:', timestamp, formattedTime);
+}
+
+function setLapTime(timestamp: number, formattedTime: string, id: string) {
+  console.log('Lap time:', timestamp, formattedTime, id);
+}
+
+
+// CONFIGURATION
+const confTimeLeft = 20;
+const configLearningMode = true;
+
+const learningMode = ref<boolean>(configLearningMode);
+const currentPlayer = ref('Tom')
+const userAnswer = ref<number|undefined>()
+const question = ref('')
+const currentAnswer = ref<number | null>(null)
+const currentEquation = ref<Equation | null>(null);
+const timer = ref<number | null>(null)
+const timeLeft = ref(confTimeLeft)
+const timeSetting = ref(confTimeLeft)
+const IS_PAUSED_INIT = true;
+const isPaused = ref(IS_PAUSED_INIT)
+const message = ref('')
+const history = ref<Array<HistoryRecord>>([])
+
+const listToLearn = ref<Equation[]>([]);
+const currentIndexListToLearn = ref<number>(0);
+
+const getRandomIntegerInclusive = (interval: Interval): number => {
+  return getRandomIntegerInclusiveMinMax(interval.min, interval.max);
+}
+
+const getRandomIntegerInclusiveMinMax = (min: number, max: number): number => {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function generateQuestionsToLearn(): Equation[]{
+  let eqList: Equation[] = [];
+  let sign: string, isAddition: boolean;
+
+  const crit: Criteria = {
+    name: 'Level 1: 0,5 +',
+    intervalA: { min: 0, max: 10 },
+    sign: ESignType.PLUS,
+    intervalB: { min: 0, max: 10 },
+    intervalResult: { min: 0, max: 10 }
+  };
+
+  for (let a = crit.intervalA.min; a <= crit.intervalA.max; a++) {
+    for (let b = crit.intervalB.min; b <= crit.intervalB.max && a + b <= crit.intervalResult.max; b++) {
+      sign = getSign(crit.sign);
+      isAddition = sign === '+';
+      const eq: Equation = {
+        numA: a,
+        sign: sign,
+        numB: b,
+        result: isAddition ? a + b : a - b
+      }
+      eqList.push(eq);
+    }
+  }
+
+  return eqList;
+}
+
+function generateQuestionEquation(criteria: Criteria): Equation {
+  let num1: number, num2: number, sign: string, isAddition: boolean;
+  do {
+    num1 = getRandomIntegerInclusive(criteria.intervalA);
+    num2 = getRandomIntegerInclusive(criteria.intervalB);
+    sign = getSign(criteria.sign);
+    isAddition = sign === '+';
+
+    question.value = isAddition ? `${num1} + ${num2}` : `${num1} - ${num2}`;
+    currentAnswer.value = isAddition ? num1 + num2 : num1 - num2;
+
+  } while (
+         currentAnswer.value! < criteria.intervalResult.min
+      || currentAnswer.value! > criteria.intervalResult.max
+      || (currentAnswer.value === 0 && (num1 === 0 || num2 === 0))
+      );
+
+  const equation: Equation = {
+    numA: num1,
+    sign: sign,
+    numB: num2,
+    result: currentAnswer.value
+  };
+
+  currentEquation.value = equation;
+  return equation;
+}
+
+function isActivePlayerClass(player: string): string {
+  return currentPlayer.value === player ? 'active-player' : ''
+}
+
+function startTurn() {
+  newQuestion();
+  userAnswer.value = undefined
+  startTimer()
+}
+
+function newQuestion() {
+  if (learningMode.value) {
+    const eq = listToLearn.value[currentIndexListToLearn.value];
+    let isAddition: boolean = eq.sign === '+';
+
+    question.value = isAddition ? `${eq.numA} + ${eq.numB}` : `${eq.numA} - ${eq.numB}`;
+    currentAnswer.value = isAddition ? eq.numA + eq.numB : eq.numA - eq.numB;
+
+    currentIndexListToLearn.value = currentIndexListToLearn.value + 1;
+  }
+}
+
+function startTimer() {
+  start();
+  if (timer.value) clearInterval(timer.value)
+  timeLeft.value = timeSetting.value || 10
+  timer.value = setInterval(() => {
+    if (!isPaused.value) {
+      timeLeft.value--
+      if (timeLeft.value <= 0) {
+        clearInterval(timer.value!)
+        handleSubmit()
+      }
+    }
+  }, 1000) as unknown as number
+}
+
+// Funkce pro zvýšení hodnoty o 1
+function incrementTimer() {
+  timeSetting.value += 1;
+}
+
+// Funkce pro snížení hodnoty o 1
+function decrementTimer() {
+  timeSetting.value -= 1;
+}
+
+function resetGame() {
+  currentPlayer.value = 'Tom'
+  isPaused.value = IS_PAUSED_INIT;
+  message.value = ''
+  history.value = []
+  currentIndexListToLearn.value = 0;
+  startTurn()
+}
+
+function addHistoryEntry(isCorrect: boolean) {
+  const historyRecord: HistoryRecord = {
+    equation: currentEquation.value,
+    question: question.value,
+    playerName: currentPlayer.value,
+    userAnswer: userAnswer.value,
+    correctAnswer: currentAnswer.value,
+    isCorrect: isCorrect
+  }
+  console.log("add history entry", historyRecord)
+  history.value.unshift(historyRecord)
+}
+
+function handleSubmit() {
+  stop();
+  console.log("handle Submit")
+  clearInterval(timer.value!)
+  const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
+  addHistoryEntry(isCorrect)
+  message.value = isCorrect
+      ? `${currentPlayer.value} odpověděl správně!`
+      : `${currentPlayer.value} odpověděl špatně!`
+  if (!isCorrect) {
+    console.log('correct');
+    startTurn();
+    return
+  }
+  startTurn();
+}
+
+function togglePause() {
+  isPaused.value = !isPaused.value
+}
+
+onMounted(() => {
+  listToLearn.value = generateQuestionsToLearn();
+  resetGame();
+})
+
+// Přidejte klávesovou událost do okna, pokud potřebujete, aby fungovala i mimo div
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    handleSubmit(); // Zavolá handleSubmit při stisknutí Enter
+  }
+});
+function triggerButton() {
+  //handleSubmit(); // Volá se kliknutí na tlačítko
+}
+
+</script>
+
+<style scoped>
+/*
+p, span, div {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  font-size: 2vw;
+}
+h1 {
+  font-size: 5vw;
+}
+h2 {
+  font-size: 3vw;
+}
+h3 {
+  font-size: 2vw;
+}
+*/
+.card-player {
+  display: flex;
+  flex-grow: 1;
+  margin: 0 3px;
+  padding: 2px;
+}
+.active-player {
+  background-color: #ccfcc9;
+}
+.player {
+}
+#question {
+  margin: 20px 0;
+  font-size: 20px;
+}
+#timer {
+  color: red;
+  margin: 20px 0;
+  text-align: right;
+  font-size: 20px;
+}
+.history-entry {
+  margin-bottom: 0;
+  font-size: 9px;
+}
+.history-entry span {
+  display: inline-block;
+}
+/* Playboard má vyplňovat celý levý prostor */
+.playboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.playboard {
+  background-color: #f5f5f5; /* Pozadí herní desky */
+  padding: 5px;
+  height: 100%; /* Zajistí vyplnění výšky rodičovského kontejneru */
+}
+
+/* History je zarovnaný v pravém horním rohu a roztažitelný na výšku */
+.history-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Zarovná do pravého horního rohu */
+  justify-content: flex-start;
+  height: 100vh; /* Celá výška okna */
+}
+
+.history {
+  background-color: #e0e0e0; /* Pozadí historie */
+  padding: 5px;
+  width: 100%; /* Roztažení na šířku */
+  overflow-y: auto; /* Rolování v případě dlouhé historie */
+}
+.history h3 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+span.history-record-wrong-answer {
+  /* text-decoration: line-through; */
+  font-style: italic;
+  color: red;
+  margin: 0 !important;
+}
+
+span.history-record-correct-answer {
+  color: green;
+  margin: 0 !important;
+}
+</style>
