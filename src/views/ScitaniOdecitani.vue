@@ -113,7 +113,7 @@
           <div class="history">
             <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
-              <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal' , fontSize: index === 0 ? '14px' : '10px'}">
+              <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
                 <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
                 <span>{{ entry.question }}</span> = <span v-if="entry.isCorrect" class="history-record-correct-answer">{{ entry.userAnswer }}</span>
                 <span v-if="!entry.isCorrect">
@@ -407,13 +407,6 @@ function resetGame() {
 }
 
 function addHistoryEntry(isCorrect: boolean) {
-  console.log("add history entry")
-  const entry = {
-    player: currentPlayer.value,
-    question: question.value,
-    answer: currentAnswer.value!,
-    isCorrect
-  };
   const historyRecord: HistoryRecord = {
     equation: currentEquation.value,
     question: question.value,
@@ -422,13 +415,14 @@ function addHistoryEntry(isCorrect: boolean) {
     correctAnswer: currentAnswer.value,
     isCorrect: isCorrect
   }
+  console.log("add history entry", historyRecord)
   history.value.unshift(historyRecord)
 }
 
 function handleSubmit() {
   console.log("handle Submit")
   clearInterval(timer.value!)
-  const isCorrect = (userAnswer.value ?? 0) === currentAnswer.value
+  const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
   addHistoryEntry(isCorrect)
   message.value = isCorrect
       ? `${currentPlayer.value} odpověděl správně!`
@@ -499,9 +493,8 @@ h3 {
   font-size: 20px;
 }
 .history-entry {
-  margin-bottom: 0px;
-  text-wrap: nowrap;
-  font-size: 10px;
+  margin-bottom: 0;
+  font-size: 9px;
 }
 .history-entry span {
   display: inline-block;
@@ -511,7 +504,6 @@ h3 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100vh; /* Celá výška okna */
 }
 
 .playboard {

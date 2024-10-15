@@ -1,5 +1,10 @@
 ### hry-pro-deti-vuejs | # vue-js__hry-pro-deti
 
+```
+Home: d:\PROJECTS\PROGRAMMING\WEB_APP\VueJS\vue-js__hry-pro-deti\
+Work: d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\
+```
+
 # How to RUN:
 ```
 npm run dev -- --port 8000
