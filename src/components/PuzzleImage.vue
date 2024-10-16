@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import type { CSSProperties } from 'vue'; // Use type-only import
 
 // Props
 const props = defineProps<{
@@ -43,7 +44,7 @@ const imageStyle = computed(() => {
     maxWidth: `${props.param_maxWidth}px`,
     maxHeight: `${props.param_maxHeight}px`,
     objectFit: 'contain', // maintain aspect ratio
-  };
+  } as CSSProperties;
 });
 
 // Calculate the puzzle container size
@@ -52,17 +53,23 @@ const puzzleStyle = computed(() => {
     position: 'relative',
     width: `${props.param_maxWidth}px`,
     height: `${props.param_maxHeight}px`,
-  };
+  } as CSSProperties;
 });
 
-// Function to get the style for each piece, including its position
-const getPieceStyle = (index: number) => {
-  const piecesPerRow = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces));
-  const pieceWidth = props.param_maxWidth / piecesPerRow;
-  const pieceHeight = props.param_maxHeight / piecesPerRow;
+// Function to get the style for each piece, ensuring the whole image is covered
+const getPieceStyle = (index: number): CSSProperties => {
+  const aspectRatio = props.param_maxWidth / props.param_maxHeight;
 
-  const row = Math.floor(index / piecesPerRow);
-  const col = index % piecesPerRow;
+  // Calculate number of columns and rows based on the aspect ratio and number of pieces
+  const cols = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces * aspectRatio));
+  const rows = Math.ceil(props.param_numberOfHiddenPieces / cols);
+
+  // Calculate width and height of each piece
+  const pieceWidth = props.param_maxWidth / cols;
+  const pieceHeight = props.param_maxHeight / rows;
+
+  const row = Math.floor(index / cols);
+  const col = index % cols;
 
   return {
     width: `${pieceWidth}px`,
