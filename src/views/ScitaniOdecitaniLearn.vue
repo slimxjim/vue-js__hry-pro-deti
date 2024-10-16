@@ -192,7 +192,25 @@ function generateQuestionsToLearn(): Equation[]{
     }
   }
 
+  shuffle(eqList);
   return eqList;
+}
+
+function shuffle(array: any) {
+  // https://stackoverflow.com/a/2450976/8494889
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
 }
 
 function generateQuestionEquation(criteria: Criteria): Equation {
