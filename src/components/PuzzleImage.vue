@@ -1,6 +1,6 @@
 <template>
   <div class="puzzle-container" :style="puzzleStyle">
-    <img :src="param_imagesUrl" :style="imageStyle" />
+    <img :src="param_imagesUrl" :style="imageStyle" ref="imageElement" />
     <div
       v-for="(piece, index) in pieces"
       :key="index"
@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { CSSProperties } from 'vue'; // Use type-only import
+import { ref, computed, onMounted } from 'vue';
+import type { CSSProperties } from 'vue';
 
 // Props
 const props = defineProps<{
@@ -29,6 +29,10 @@ const pieces = ref<{ visible: boolean }[]>(
   }))
 );
 
+// State to store the real dimensions of the image
+const realImageWidth = ref(0);
+const realImageHeight = ref(0);
+
 // Function to reveal a random piece
 const next = () => {
   const hiddenPieces = pieces.value.filter(piece => !piece.visible);
@@ -38,35 +42,81 @@ const next = () => {
   }
 };
 
-// Calculate the image size to maintain the aspect ratio
+// Calculate the real size of the image, maintaining the aspect ratio
 const imageStyle = computed(() => {
+  const maxWidth = props.param_maxWidth;
+  const maxHeight = props.param_maxHeight;
+  const aspectRatio = realImageWidth.value / realImageHeight.value;
+
+  // Calculate dimensions while maintaining aspect ratio
+  let width = maxWidth;
+  let height = maxHeight;
+  if (aspectRatio > 1) {
+    height = maxWidth / aspectRatio;
+  } else {
+    width = maxHeight * aspectRatio;
+  }
+
   return {
-    maxWidth: `${props.param_maxWidth}px`,
-    maxHeight: `${props.param_maxHeight}px`,
-    objectFit: 'contain', // maintain aspect ratio
+    width: `${width}px`,
+    height: `${height}px`,
+    objectFit: 'contain',
   } as CSSProperties;
 });
 
-// Calculate the puzzle container size
+// On mounted, calculate the real image dimensions from the actual image element
+const imageElement = ref<HTMLImageElement | null>(null);
+onMounted(() => {
+  const img = imageElement.value;
+  if (img) {
+    img.onload = () => {
+      realImageWidth.value = img.naturalWidth;
+      realImageHeight.value = img.naturalHeight;
+    };
+  }
+});
+
+// Puzzle container style
 const puzzleStyle = computed(() => {
+  const maxWidth = props.param_maxWidth;
+  const maxHeight = props.param_maxHeight;
+  const aspectRatio = realImageWidth.value / realImageHeight.value;
+  // Calculate dimensions while maintaining aspect ratio
+  let width = maxWidth;
+  let height = maxHeight;
+  if (aspectRatio > 1) {
+    height = maxWidth / aspectRatio;
+  } else {
+    width = maxHeight * aspectRatio;
+  }
+
   return {
+    width: `${width}px`,
+    height: `${height}px`,
     position: 'relative',
-    width: `${props.param_maxWidth}px`,
-    height: `${props.param_maxHeight}px`,
   } as CSSProperties;
 });
 
 // Function to get the style for each piece, ensuring the whole image is covered
 const getPieceStyle = (index: number): CSSProperties => {
-  const aspectRatio = props.param_maxWidth / props.param_maxHeight;
-
-  // Calculate number of columns and rows based on the aspect ratio and number of pieces
-  const cols = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces * aspectRatio));
+  const cols = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces));
   const rows = Math.ceil(props.param_numberOfHiddenPieces / cols);
+  console.log('cols', cols);
+  console.log('rows', rows);
 
-  // Calculate width and height of each piece
-  const pieceWidth = props.param_maxWidth / cols;
-  const pieceHeight = props.param_maxHeight / rows;
+  // Get the actual dimensions of the resized image
+  const aspectRatio = realImageWidth.value / realImageHeight.value;
+  let actualWidth = props.param_maxWidth;
+  let actualHeight = props.param_maxHeight;
+  if (aspectRatio > 1) {
+    actualHeight = props.param_maxWidth / aspectRatio;
+  } else {
+    actualWidth = props.param_maxHeight * aspectRatio;
+  }
+
+  // Calculate width and height for each piece to fit within the resized image
+  const pieceWidth = actualWidth / cols;
+  const pieceHeight = actualHeight / rows;
 
   const row = Math.floor(index / cols);
   const col = index % cols;

@@ -2,7 +2,7 @@
 <!--  <RoadMap/>-->
   <PuzzleImage
     ref="puzzleRef"
-    :param_numberOfHiddenPieces="10"
+    :param_numberOfHiddenPieces="8"
     param_imagesUrl="https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg"
     :param_maxHeight="500"
     :param_maxWidth="500"
