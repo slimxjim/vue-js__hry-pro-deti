@@ -30,6 +30,17 @@
                     </div>
                   </v-card>
                 </v-col>
+                <v-col class="d-flex justify-start w-100">
+                  <v-card>
+                    <PuzzleImage
+                      ref="puzzleRef"
+                      :param_numberOfHiddenPieces="listToLearn.length"
+                      param_imagesUrl="https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg"
+                      :param_maxHeight="250"
+                      :param_maxWidth="250"
+                    />
+                  </v-card>
+                </v-col>
               </v-row>
               <div style="display: flex; flex-grow: 1">
                 <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
@@ -121,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeMount } from 'vue'
 import Numpad from "@/components/Numpad.vue";
 import {
   type Criteria,
@@ -132,6 +143,7 @@ import {
   type Interval, padWithNonBreakingSpaces
 } from "@/composable/AddSubUtils";
 import StopWatch from "@/components/StopWatch.vue";
+import PuzzleImage from '@/components/PuzzleImage.vue'
 
 
 // CONFIGURATION
@@ -154,6 +166,13 @@ const history = ref<Array<HistoryRecord>>([])
 
 const listToLearn = ref<Equation[]>([]);
 const currentIndexListToLearn = ref<number>(0);
+
+//Puzzle:
+const puzzleRef = ref();
+
+const revealNextPiece = () => {
+  puzzleRef.value?.next();
+};
 
 const getRandomIntegerInclusive = (interval: Interval): number => {
   return getRandomIntegerInclusiveMinMax(interval.min, interval.max);
@@ -313,6 +332,9 @@ function handleSubmit() {
   console.log("handle Submit")
   clearInterval(timer.value!)
   const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
+  if (isCorrect) {
+    revealNextPiece();
+  }
   addHistoryEntry(isCorrect)
   message.value = isCorrect
       ? `${currentPlayer.value} odpověděl správně!`
@@ -329,8 +351,11 @@ function togglePause() {
   isPaused.value = !isPaused.value
 }
 
-onMounted(() => {
+onBeforeMount( () => {
   listToLearn.value = generateQuestionsToLearn();
+})
+
+onMounted(() => {
   resetGame();
 })
 

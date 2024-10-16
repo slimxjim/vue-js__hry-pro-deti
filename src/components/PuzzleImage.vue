@@ -67,6 +67,7 @@ const imageStyle = computed(() => {
 // On mounted, calculate the real image dimensions from the actual image element
 const imageElement = ref<HTMLImageElement | null>(null);
 onMounted(() => {
+  console.log('param_numberOfHiddenPieces = ', props.param_numberOfHiddenPieces);
   const img = imageElement.value;
   if (img) {
     img.onload = () => {
@@ -128,8 +129,7 @@ const getPieceStyle = (index: number): CSSProperties => {
     top: `${row * pieceHeight}px`,
     left: `${col * pieceWidth}px`,
     backgroundColor: 'white',
-    opacity: pieces.value[index].visible ? 0 : 0.8, // 80% opacity for hidden pieces
-    border: '1px solid red', // red border for each piece
+    opacity: pieces.value[index].visible ? 0 : 1, // 80% opacity for hidden pieces
     transition: 'opacity 0.3s',
   };
 };
