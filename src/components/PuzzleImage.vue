@@ -5,7 +5,7 @@
       v-for="(piece, index) in pieces"
       :key="index"
       class="piece"
-      :style="getPieceStyle(piece)"
+      :style="getPieceStyle(index)"
     ></div>
   </div>
 </template>
@@ -46,7 +46,7 @@ const imageStyle = computed(() => {
   };
 });
 
-// Calculate the size of each piece to cover the image
+// Calculate the puzzle container size
 const puzzleStyle = computed(() => {
   return {
     position: 'relative',
@@ -55,19 +55,25 @@ const puzzleStyle = computed(() => {
   };
 });
 
-const getPieceStyle = (piece: { visible: boolean }) => {
-  const piecesPerRow = Math.sqrt(props.param_numberOfHiddenPieces);
+// Function to get the style for each piece, including its position
+const getPieceStyle = (index: number) => {
+  const piecesPerRow = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces));
   const pieceWidth = props.param_maxWidth / piecesPerRow;
   const pieceHeight = props.param_maxHeight / piecesPerRow;
+
+  const row = Math.floor(index / piecesPerRow);
+  const col = index % piecesPerRow;
+
   return {
     width: `${pieceWidth}px`,
     height: `${pieceHeight}px`,
     position: 'absolute',
-    backgroundColor: piece.visible ? 'transparent' : 'white',
-    border: '1px solid #ddd',
-    top: `${Math.floor(pieceWidth)}px`,
-    left: `${Math.floor(pieceHeight)}px`,
-    opacity: piece.visible ? 0 : 1,
+    top: `${row * pieceHeight}px`,
+    left: `${col * pieceWidth}px`,
+    backgroundColor: 'white',
+    opacity: pieces.value[index].visible ? 0 : 0.8, // 80% opacity for hidden pieces
+    border: '1px solid red', // red border for each piece
+    transition: 'opacity 0.3s',
   };
 };
 
@@ -83,6 +89,5 @@ defineExpose({
 }
 .piece {
   transition: opacity 0.3s;
-  border: 1px solid red;
 }
 </style>
