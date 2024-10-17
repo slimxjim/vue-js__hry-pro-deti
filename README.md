@@ -1,13 +1,45 @@
 ### hry-pro-deti-vuejs | # vue-js__hry-pro-deti
-
+https://github.com/slimxjim/vue-js__hry-pro-deti
 ```
 Home: d:\PROJECTS\PROGRAMMING\WEB_APP\VueJS\vue-js__hry-pro-deti\
 Work: d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\
 ```
+---
 
 # How to RUN:
+### Locally
 ```
 npm run dev -- --port 8000
+```
+
+---
+
+# TODO:
+## vylepšit hru:
+- hráč proti PC, monster - obrázek
+- animace kulek, střelby: https://jsfiddle.net/5bcncsv2/- plusové příklady seberou příšeře jen třetinu damage
+- mínusové celé a mínusy přes desete budou za dvojnásobek
+- animace hráčova avatara, animace monster avatara: https://www.shutterstock.com/image-vector/goblin-character-ready-animation-mobile-applications-643122487
+- čím rychlejší budou odpovědi, tím ničivější budou - formát odměn: do 3s - 2x damage + život navíc, do 10s - 1.5x, nad 30s ztráta života, nad 60s ztráta života a heal příšeře
+- různé mody (0-10, 0-20, jen plus, jen mínus, kombinace)
+- přidat hru na trénink - tři chlívečky, rozklad čísel (trojúhelník, nahoře nejvyšší číslo)
+
+## Inspirations:
+- JS 3D (OMG): https://playground.babylonjs.com/#UK6WTT#8 (https://forum.babylonjs.com/t/create-a-simple-machine-gun/14771/2)
+- Blast off a rocket (JS) https://codepen.io/mel-ociraptor/pen/rGJLeN
+    - **=> místo zabíjení monstra, start rakety a přistání**
+- Animation sprite: how to Vue: https://vueschool.io/articles/vuejs-tutorials/how-to-create-an-animated-sprite-with-vueuse/
+- https://www.freeiconspng.com/ obrázky
+- [Part 1: Advanced Animations with Animation Sprites in Vue.js](https://medium.com/@dalilaba/part-1-advanced-animations-with-animation-sprites-in-vue-js-89b14ea756c8)
+    -  https://github.com/dalilaavdukic/vue-animation-sprites
+
+---
+
+
+## Tip: for Win App:
+**Install** web app as Windows App via Chrom: 
+```
+Chrome: Three dots > Cast, save and share > Install
 ```
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -95,21 +127,3 @@ copy content from:
 </IfModule>
 ```
 
-# TODO:
-## vylepšit hru:
-- hráč proti PC, monster - obrázek
-- animace kulek, střelby: https://jsfiddle.net/5bcncsv2/- plusové příklady seberou příšeře jen třetinu damage
-- mínusové celé a mínusy přes desete budou za dvojnásobek
-- animace hráčova avatara, animace monster avatara: https://www.shutterstock.com/image-vector/goblin-character-ready-animation-mobile-applications-643122487
-- čím rychlejší budou odpovědi, tím ničivější budou - formát odměn: do 3s - 2x damage + život navíc, do 10s - 1.5x, nad 30s ztráta života, nad 60s ztráta života a heal příšeře
-- různé mody (0-10, 0-20, jen plus, jen mínus, kombinace)
-- přidat hru na trénink - tři chlívečky, rozklad čísel (trojúhelník, nahoře nejvyšší číslo)
-
-## Inspirations:
-- JS 3D (OMG): https://playground.babylonjs.com/#UK6WTT#8 (https://forum.babylonjs.com/t/create-a-simple-machine-gun/14771/2)
-- Blast off a rocket (JS) https://codepen.io/mel-ociraptor/pen/rGJLeN  
-  - **=> místo zabíjení monstra, start rakety a přistání**
-- Animation sprite: how to Vue: https://vueschool.io/articles/vuejs-tutorials/how-to-create-an-animated-sprite-with-vueuse/
-- https://www.freeiconspng.com/ obrázky
-- [Part 1: Advanced Animations with Animation Sprites in Vue.js](https://medium.com/@dalilaba/part-1-advanced-animations-with-animation-sprites-in-vue-js-89b14ea756c8)
-  -  https://github.com/dalilaavdukic/vue-animation-sprites
