@@ -5,6 +5,8 @@ Home: d:\PROJECTS\PROGRAMMING\WEB_APP\VueJS\vue-js__hry-pro-deti\
 Work: d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\
 ```
 ---
+### Database - firebase
+- https://console.firebase.google.com/u/0/project/vuejs-tom-hry/firestore/databases/
 
 # How to RUN:
 ### Locally

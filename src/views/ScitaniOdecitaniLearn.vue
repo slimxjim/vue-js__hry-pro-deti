@@ -122,6 +122,21 @@
               <button @click="() => stopWatcher.stop()">Stop</button> |
               <button @click="() => stopWatcher.reset()">Reset</button> |
             </div>
+            <hr/>
+            <div>
+              <h1>History Learning Data:</h1>
+              <ul>
+                <li v-for="doc in historyLearningDocs" :key="doc.id">
+                  <p>Player Name: {{ doc.playerName }}</p>
+                  <p>Question: {{ doc.question }}</p>
+                  <p>User Answer: {{ doc.userAnswer }}</p>
+                  <p>Correct Answer: {{ doc.correctAnswer }}</p>
+                  <p>Is Correct: {{ doc.isCorrect }}</p>
+                  <p>Time (ms): {{ doc.timeMs }}</p>
+                </li>
+              </ul>
+            </div>
+            <hr/>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
               <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
                 <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
@@ -159,6 +174,8 @@ import StopWatch from "@/components/StopWatch.vue";
 import PuzzleImage from '@/components/PuzzleImage.vue'
 import { useMouse } from '@vueuse/core'
 import { StopWatcher } from '@/composable/stopWatch'
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/composable/firebase'
 
 
 const { x, y } = useMouse()
@@ -167,6 +184,28 @@ const stopWatcher: StopWatcher = new StopWatcher();
 // CONFIGURATION
 const confTimeLeft = 20;
 const configLearningMode = true;
+// ----------
+
+//Firebase:
+const historyLearningDocs = ref([]);
+
+const fetchHistoryLearningDocs = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'history-learning'));
+    historyLearningDocs.value = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching documents: ", error);
+  }
+};
+
+onMounted(() => {
+  fetchHistoryLearningDocs();
+});
+// ----------
+
 
 const learningMode = ref<boolean>(configLearningMode);
 const currentPlayer = ref('Tom')
