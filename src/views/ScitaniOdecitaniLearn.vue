@@ -110,14 +110,27 @@
         <v-col cols="4" class="history-container">
           <div class="history">
             <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
-            <p><StopWatch/>
+            <p>
+              <StopWatch/>
             </p>
+            <p>
+              Mouse position is at: {{ x }}, {{ y }}
+            </p>
+            <div>TIME = {{ stopWatcher.time }} | {{ stopWatcher.timeMs }} ms</div>
+            <div>
+              <button @click="() => stopWatcher.start()">Start</button> |
+              <button @click="() => stopWatcher.stop()">Stop</button> |
+              <button @click="() => stopWatcher.reset()">Reset</button> |
+            </div>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
               <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
                 <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
                 <span>{{ entry.question }}</span> = <span v-if="entry.isCorrect" class="history-record-correct-answer">{{ entry.userAnswer }}</span>
                 <span v-if="!entry.isCorrect">
                   <span class="history-record-wrong-answer">{{ entry.userAnswer ?? '×'}} </span> <span style="margin: 0 10px"> => </span><span class="history-record-correct-answer">{{ entry.correctAnswer}}</span>
+                </span>
+                <span>
+                  čas: {{ entry.timeMs}} | {{ entry.time}}
                 </span>
 
               </div>
@@ -144,8 +157,13 @@ import {
 } from "@/composable/AddSubUtils";
 import StopWatch from "@/components/StopWatch.vue";
 import PuzzleImage from '@/components/PuzzleImage.vue'
+import { useMouse } from '@vueuse/core'
+import { StopWatcher } from '@/composable/stopWatch'
 
 
+const { x, y } = useMouse()
+
+const stopWatcher: StopWatcher = new StopWatcher();
 // CONFIGURATION
 const confTimeLeft = 20;
 const configLearningMode = true;
@@ -268,6 +286,7 @@ function startTurn() {
   newQuestion();
   userAnswer.value = undefined
   startTimer()
+  stopWatcher.start();
 }
 
 function newQuestion() {
@@ -322,14 +341,17 @@ function addHistoryEntry(isCorrect: boolean) {
     playerName: currentPlayer.value,
     userAnswer: userAnswer.value,
     correctAnswer: currentAnswer.value,
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
+    time: stopWatcher.time.value,
+    timeMs: stopWatcher.timeMs.value
   }
   console.log("add history entry", historyRecord)
   history.value.unshift(historyRecord)
 }
 
 function handleSubmit() {
-  console.log("handle Submit")
+  console.log("handle Submit");
+  stopWatcher.stop();
   clearInterval(timer.value!)
   const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
   if (isCorrect) {

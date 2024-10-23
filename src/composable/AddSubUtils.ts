@@ -60,6 +60,8 @@ export interface HistoryRecord {
     correctAnswer: number | null,
     isCorrect: boolean | null,
     playerName: string,
+    time: string,
+    timeMs: number
 }
 
 export function padWithNonBreakingSpaces(index: number, totalPlaces: number): string {

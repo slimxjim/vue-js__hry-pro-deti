@@ -102,8 +102,8 @@ const puzzleStyle = computed(() => {
 const getPieceStyle = (index: number): CSSProperties => {
   const cols = Math.ceil(Math.sqrt(props.param_numberOfHiddenPieces));
   const rows = Math.ceil(props.param_numberOfHiddenPieces / cols);
-  console.log('cols', cols);
-  console.log('rows', rows);
+  // console.log('cols', cols);
+  // console.log('rows', rows);
 
   // Get the actual dimensions of the resized image
   const aspectRatio = realImageWidth.value / realImageHeight.value;
