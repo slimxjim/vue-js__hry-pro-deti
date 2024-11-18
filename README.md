@@ -13,6 +13,7 @@ Work: d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\
 ```
 npm run dev -- --port 8000
 ```
+HP NTB: `F:/_D/PROJECTS/PROGRAMMING/WEB_APP/VueJS/hry-pro-deti-vuejs`
 
 ---
 
