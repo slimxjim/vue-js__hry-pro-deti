@@ -19,6 +19,7 @@
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
     "@vueuse/core": "^11.1.0",
+    "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "dotenv": "^16.4.7",
