@@ -99,13 +99,13 @@ import axios from "axios";
 
 const form = ref(null);
 const turnData = ref({
-  GameID: 3,
+  GameID: 1,
   OperandA: 5,
   Operator: "+",
   OperandB: 10,
   CorrectAnswer: 15,
   PlayerAnswer: 10,
-  IsCorrect: false,
+  IsCorrect: true,
   AnswerTimeMs: 560,
 });
 

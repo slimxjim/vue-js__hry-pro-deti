@@ -64,28 +64,28 @@ CREATE TABLE TurnHistory (
     FOREIGN KEY (GameID) REFERENCES GameHistory(GameID)
 );
 
--- Table for used examples
-CREATE TABLE UsedExamples (
-    ExampleID INT AUTO_INCREMENT PRIMARY KEY, -- Unique example ID
+-- Table for used calculations
+CREATE TABLE UsedCalculations (
+    CalculationID INT AUTO_INCREMENT PRIMARY KEY, -- Unique calculation ID
     OperandA INT,                             -- Operand A
     Operator VARCHAR(2),                      -- Operator (+, -)
     OperandB INT,                             -- Operand B
     CorrectAnswer INT                         -- Correct answer
 );
 
--- Table for example statistics
-CREATE TABLE ExampleStats (
+-- Table for Calculating statistics
+CREATE TABLE CalculatingStats (
     StatID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique stat ID
     PlayerID INT,                            -- Player ID
-    ExampleID INT,                           -- Example ID (from UsedExamples)
+    CalculationID INT,                       -- Calculation ID (from UsedCalculations)
     BestTimeMs INT,                          -- Best answer time (ms)
     WorstTimeMs INT,                         -- Worst answer time (ms)
     ErrorRate DECIMAL(5, 2),                 -- Error rate percentage
-    TotalAttempts INT,                       -- Total attempts for this example
+    TotalAttempts INT,                       -- Total attempts for this calculation problem
     CorrectAttempts INT,                     -- Total correct attempts
     IncorrectAttempts INT,                   -- Total incorrect attempts
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
-    FOREIGN KEY (ExampleID) REFERENCES UsedExamples(ExampleID)
+    FOREIGN KEY (CalculationID) REFERENCES UsedCalculations(CalculationID)
 );
 
 -- Table for incorrect answers history
@@ -98,7 +98,7 @@ CREATE TABLE IncorrectAnswers (
     CorrectAnswer INT,                        -- Correct answer
     PlayerAnswer INT,                         -- Player's incorrect answer
     AnswerTimeMs INT,                         -- Time taken to answer (ms)
-    LevelID INT,                              -- Level from which the example came
+    LevelID INT,                              -- Level from which the calculation came
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
     FOREIGN KEY (LevelID) REFERENCES Levels(LevelID)
 );

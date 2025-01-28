@@ -105,7 +105,7 @@ const gameData = ref({
   LivesPlayer: 3,
   LivesOpponent: 2,
   TimeLimitSeconds: 20,
-  CurrentLevelID: 2,
+  CurrentLevelID: 1,
   LastExpression: "5+10=15",
 });
 

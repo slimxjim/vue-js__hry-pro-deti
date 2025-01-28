@@ -3,10 +3,10 @@ include 'cors_allow.php';
 include 'db.php';
 include 'CrudController.php';
 
-$table = 'ExampleStats';
+$table = 'CalculatingStats';
 $columns = [
     'PlayerID',
-    'ExampleID',
+    'CalculationID',
     'BestTimeMs',
     'WorstTimeMs',
     'ErrorRate',

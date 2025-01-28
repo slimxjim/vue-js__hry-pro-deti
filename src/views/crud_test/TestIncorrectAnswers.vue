@@ -77,7 +77,7 @@ const resetForm = () => {
     CorrectAnswer: 15,
     PlayerAnswer: 10,
     AnswerTimeMs: 4560,
-    LevelID: 3,
+    LevelID: 1,
   };
   response.value = null;
 };

@@ -3,7 +3,7 @@ include 'cors_allow.php';
 include 'db.php';
 include 'CrudController.php';
 
-$table = 'UsedExamples';
+$table = 'UsedCalculations';
 $columns = [
     'OperandA',
     'Operator',
@@ -11,7 +11,7 @@ $columns = [
     'CorrectAnswer'
 ];
 
-$primaryKey = 'ExampleID';
+$primaryKey = 'CalculationID';
 
 $controller = new CrudController($conn, $table, $columns, $primaryKey);
 $controller->handleRequest();
