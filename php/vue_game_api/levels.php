@@ -8,7 +8,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch ($method) {
     case 'GET':
         // Retrieve records
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("SELECT * FROM Levels WHERE LevelID = ?");
             $stmt->bind_param("i", $id);
@@ -47,7 +47,7 @@ switch ($method) {
 
     case 'PUT':
         // Update an existing record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("UPDATE Levels SET Type = ?, Name = ?, MinA = ?, MaxA = ?, Operator = ?, MinB = ?, MaxB = ?, MinResult = ?, MaxResult = ?, Description = ? WHERE LevelID = ?");
             $stmt->bind_param(
@@ -78,7 +78,7 @@ switch ($method) {
 
     case 'DELETE':
         // Delete a record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("DELETE FROM Levels WHERE LevelID = ?");
             $stmt->bind_param("i", $id);

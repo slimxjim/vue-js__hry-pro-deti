@@ -8,7 +8,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch ($method) {
     case 'GET':
         // Retrieve records
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("SELECT * FROM GameHistory WHERE GameID = ?");
             $stmt->bind_param("i", $id);
@@ -45,7 +45,7 @@ switch ($method) {
 
     case 'PUT':
         // Update an existing record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("UPDATE GameHistory SET CreationTimestamp = ?, PlayerID = ?, CurrentTurn = ?, LivesPlayer = ?, LivesOpponent = ?, TimeLimitSeconds = ?, CurrentLevelID = ?, LastExpression = ? WHERE GameID = ?");
             $stmt->bind_param(
@@ -74,7 +74,7 @@ switch ($method) {
 
     case 'DELETE':
         // Delete a record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("DELETE FROM GameHistory WHERE GameID = ?");
             $stmt->bind_param("i", $id);

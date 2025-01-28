@@ -8,7 +8,6 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch ($method) {
     case 'GET':
         // Retrieve records
-        //PHP 7.0: $id = $_GET['id'] ?? null;
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("SELECT * FROM Players WHERE PlayerID = ?");
@@ -43,7 +42,7 @@ switch ($method) {
 
     case 'PUT':
         // Update an existing record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("UPDATE Players SET Name = ?, Username = ?, PasswordHash = ?, Age = ?, ClassNumber = ? WHERE PlayerID = ?");
             $stmt->bind_param(
@@ -69,7 +68,7 @@ switch ($method) {
 
     case 'DELETE':
         // Delete a record
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             $stmt = $conn->prepare("DELETE FROM Players WHERE PlayerID = ?");
             $stmt->bind_param("i", $id);

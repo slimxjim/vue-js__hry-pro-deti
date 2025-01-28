@@ -3,6 +3,7 @@ include 'cors_allow.php';
 include 'db.php';
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
+$input = json_decode(file_get_contents('php://input'), true);
 
 switch ($requestMethod) {
     case "GET":
@@ -19,54 +20,77 @@ switch ($requestMethod) {
         break;
 
     case "POST":
-        $data = json_decode(file_get_contents("php://input"), true);
         $stmt = $conn->prepare("INSERT INTO TurnHistory (GameID, OperandA, Operator, OperandB, CorrectAnswer, PlayerAnswer, IsCorrect, AnswerTimeMs) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param(
-            "iisiiibi",
-            $data["GameID"],
-            $data["OperandA"],
-            $data["Operator"],
-            $data["OperandB"],
-            $data["CorrectAnswer"],
-            $data["PlayerAnswer"],
-            $data["IsCorrect"],
-            $data["AnswerTimeMs"]
+            "iisiiiii",
+            $input["GameID"],
+            $input["OperandA"],
+            $input["Operator"],
+            $input["OperandB"],
+            $input["CorrectAnswer"],
+            $input["PlayerAnswer"],
+            $input["IsCorrect"],
+            $input["AnswerTimeMs"]
         );
-        $stmt->execute();
-        echo json_encode(["TurnID" => $stmt->insert_id]);
-        break;
-
-    case "PUT":
-        parse_str(file_get_contents("php://input"), $data);
-        $stmt = $conn->prepare("UPDATE TurnHistory SET GameID = ?, OperandA = ?, Operator = ?, OperandB = ?, CorrectAnswer = ?, PlayerAnswer = ?, IsCorrect = ?, AnswerTimeMs = ? WHERE TurnID = ?");
-        $stmt->bind_param(
-            "iisiiibii",
-            $data["GameID"],
-            $data["OperandA"],
-            $data["Operator"],
-            $data["OperandB"],
-            $data["CorrectAnswer"],
-            $data["PlayerAnswer"],
-            $data["IsCorrect"],
-            $data["AnswerTimeMs"],
-            $data["TurnID"]
-        );
-        $stmt->execute();
-        echo json_encode(["updated" => $stmt->affected_rows]);
-        break;
-
-    case "DELETE":
-        if (isset($_GET["id"])) {
-            $stmt = $conn->prepare("DELETE FROM TurnHistory WHERE TurnID = ?");
-            $stmt->bind_param("i", $_GET["id"]);
-            $stmt->execute();
-            echo json_encode(["deleted" => $stmt->affected_rows]);
+        if ($stmt->execute()) {
+          echo json_encode(["id" => $conn->insert_id]);
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => $stmt->error]);
         }
         break;
 
-    default:
-        echo json_encode(["error" => "Invalid request method"]);
+    case 'PUT':
+        // Update an existing record
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        if ($id) {
+            $stmt = $conn->prepare("UPDATE TurnHistory SET GameID = ?, OperandA = ?, Operator = ?, OperandB = ?, CorrectAnswer = ?, PlayerAnswer = ?, IsCorrect = ?, AnswerTimeMs = ? WHERE TurnID = ?");
+            $stmt->bind_param(
+                "iisiiiiii",
+                $input["GameID"],
+                $input["OperandA"],
+                $input["Operator"],
+                $input["OperandB"],
+                $input["CorrectAnswer"],
+                $input["PlayerAnswer"],
+                $input["IsCorrect"],
+                $input["AnswerTimeMs"],
+                $id
+            );
+            if ($stmt->execute()) {
+                echo json_encode(["message" => "Record updated"]);
+            } else {
+                http_response_code(400);
+                echo json_encode(["error" => $stmt->error]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "ID is required for updating"]);
+        }
         break;
+
+    case 'DELETE':
+          // Delete a record
+          $id = isset($_GET['id']) ? $_GET['id'] : null;
+          if ($id) {
+              $stmt = $conn->prepare("DELETE FROM TurnHistory WHERE TurnID = ?");
+              $stmt->bind_param("i", $id);
+              if ($stmt->execute()) {
+                  echo json_encode(["message" => "Record deleted"]);
+              } else {
+                  http_response_code(400);
+                  echo json_encode(["error" => $stmt->error]);
+              }
+          } else {
+              http_response_code(400);
+              echo json_encode(["error" => "ID is required for deletion"]);
+          }
+          break;
+  
+      default:
+          http_response_code(405);
+          echo json_encode(["error" => "Method not allowed"]);
+          break;
 }
 
 $conn->close();
