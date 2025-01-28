@@ -30,6 +30,17 @@
                     </div>
                   </v-card>
                 </v-col>
+                <v-col class="d-flex justify-start w-100">
+                  <v-card>
+                    <PuzzleImage
+                      ref="puzzleRef"
+                      :param_numberOfHiddenPieces="listToLearn.length"
+                      param_imagesUrl="https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg"
+                      :param_maxHeight="250"
+                      :param_maxWidth="250"
+                    />
+                  </v-card>
+                </v-col>
               </v-row>
               <div style="display: flex; flex-grow: 1">
                 <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
@@ -99,14 +110,42 @@
         <v-col cols="4" class="history-container">
           <div class="history">
             <h3 style="text-align: center">Historie tahů: {{history.length}}</h3>
-            <p><StopWatch/>
+            <p>
+              <StopWatch/>
             </p>
+            <p>
+              Mouse position is at: {{ x }}, {{ y }}
+            </p>
+            <div>TIME = {{ stopWatcher.time }} | {{ stopWatcher.timeMs }} ms</div>
+            <div>
+              <button @click="() => stopWatcher.start()">Start</button> |
+              <button @click="() => stopWatcher.stop()">Stop</button> |
+              <button @click="() => stopWatcher.reset()">Reset</button> |
+            </div>
+            <hr/>
+<!--            <div>-->
+<!--              <h1>History Learning Data:</h1>-->
+<!--              <ul>-->
+<!--                <li v-for="doc in historyLearningDocs" :key="doc.id">-->
+<!--                  <p>Player Name: {{ doc.playerName }}</p>-->
+<!--                  <p>Question: {{ doc.question }}</p>-->
+<!--                  <p>User Answer: {{ doc.userAnswer }}</p>-->
+<!--                  <p>Correct Answer: {{ doc.correctAnswer }}</p>-->
+<!--                  <p>Is Correct: {{ doc.isCorrect }}</p>-->
+<!--                  <p>Time (ms): {{ doc.timeMs }}</p>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </div>-->
+            <hr/>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
               <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
                 <span :style="{ color: entry.playerName === 'Tom' ? 'blue' : 'black', marginRight: '10px'}">{{ entry.playerName.charAt(0) }}:</span>
                 <span>{{ entry.question }}</span> = <span v-if="entry.isCorrect" class="history-record-correct-answer">{{ entry.userAnswer }}</span>
                 <span v-if="!entry.isCorrect">
                   <span class="history-record-wrong-answer">{{ entry.userAnswer ?? '×'}} </span> <span style="margin: 0 10px"> => </span><span class="history-record-correct-answer">{{ entry.correctAnswer}}</span>
+                </span>
+                <span>
+                  čas: {{ entry.timeMs}} | {{ entry.time}}
                 </span>
 
               </div>
@@ -121,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeMount } from 'vue'
 import Numpad from "@/components/Numpad.vue";
 import {
   type Criteria,
@@ -132,11 +171,43 @@ import {
   type Interval, padWithNonBreakingSpaces
 } from "@/composable/AddSubUtils";
 import StopWatch from "@/components/StopWatch.vue";
+import PuzzleImage from '@/components/PuzzleImage.vue'
+import { useMouse } from '@vueuse/core'
+import { StopWatcher } from '@/composable/stopWatch'
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/composable/firebase'
 
 
+const { x, y } = useMouse()
+
+const stopWatcher: StopWatcher = new StopWatcher();
 // CONFIGURATION
 const confTimeLeft = 20;
 const configLearningMode = true;
+// ----------
+
+//Firebase:
+/*
+const historyLearningDocs = ref([]);
+
+const fetchHistoryLearningDocs = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'history-learning'));
+    historyLearningDocs.value = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching documents: ", error);
+  }
+};
+
+onMounted(() => {
+  fetchHistoryLearningDocs();
+});
+*/
+// ----------
+
 
 const learningMode = ref<boolean>(configLearningMode);
 const currentPlayer = ref('Tom')
@@ -154,6 +225,13 @@ const history = ref<Array<HistoryRecord>>([])
 
 const listToLearn = ref<Equation[]>([]);
 const currentIndexListToLearn = ref<number>(0);
+
+//Puzzle:
+const puzzleRef = ref();
+
+const revealNextPiece = () => {
+  puzzleRef.value?.next();
+};
 
 const getRandomIntegerInclusive = (interval: Interval): number => {
   return getRandomIntegerInclusiveMinMax(interval.min, interval.max);
@@ -249,6 +327,7 @@ function startTurn() {
   newQuestion();
   userAnswer.value = undefined
   startTimer()
+  stopWatcher.start();
 }
 
 function newQuestion() {
@@ -303,16 +382,22 @@ function addHistoryEntry(isCorrect: boolean) {
     playerName: currentPlayer.value,
     userAnswer: userAnswer.value,
     correctAnswer: currentAnswer.value,
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
+    time: stopWatcher.time.value,
+    timeMs: stopWatcher.timeMs.value
   }
   console.log("add history entry", historyRecord)
   history.value.unshift(historyRecord)
 }
 
 function handleSubmit() {
-  console.log("handle Submit")
+  console.log("handle Submit");
+  stopWatcher.stop();
   clearInterval(timer.value!)
   const isCorrect = userAnswer.value !== undefined ? userAnswer.value === currentAnswer.value : false;
+  if (isCorrect) {
+    revealNextPiece();
+  }
   addHistoryEntry(isCorrect)
   message.value = isCorrect
       ? `${currentPlayer.value} odpověděl správně!`
@@ -329,8 +414,11 @@ function togglePause() {
   isPaused.value = !isPaused.value
 }
 
-onMounted(() => {
+onBeforeMount( () => {
   listToLearn.value = generateQuestionsToLearn();
+})
+
+onMounted(() => {
   resetGame();
 })
 

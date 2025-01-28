@@ -364,7 +364,9 @@ function addHistoryEntry(isCorrect: boolean) {
     playerName: currentPlayer.value,
     userAnswer: userAnswer.value,
     correctAnswer: currentAnswer.value,
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
+    timeMs: 0,
+    time: '0'
   }
   console.log("add history entry", historyRecord)
   history.value.unshift(historyRecord)

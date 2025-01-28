@@ -23,6 +23,7 @@
 
         <v-divider></v-divider>
 
+        <!-- https://pictogrammers.com/library/mdi/icon/database/ -->
         <v-list density="compact" nav>
           <v-list-item
               prepend-icon="mdi-home-city"
@@ -60,7 +61,24 @@
               value="animace"
               router to="/animation-playground"
           ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-database "
+              title="CRUD Test"
+              value="crud-test"
+              router to="/crud-test"
+          ></v-list-item>
         </v-list>
+
+        <v-divider>User</v-divider>
+
+        <div>
+          <v-card v-if="isLoggedIn">
+            <pre v-html="JSON.stringify(loggedUser, null, 2)"></pre>
+          </v-card>
+          <v-btn v-if="!isLoggedIn" >Přihlásit</v-btn><!-- @click="login" -->
+          <v-btn v-if="isLoggedIn" @click="logout">Odhlásit</v-btn>
+        </div>
+
       </v-navigation-drawer>
       <v-main>
 
@@ -78,9 +96,20 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import { computed, ref } from 'vue'
 import '@mdi/font/css/materialdesignicons.css'
+import { useAuthStore } from '@/stores/auth'
+
 const avatarPath = `${import.meta.env.BASE_URL}images/bird.jpeg`;
 const drawer = ref(true)
 const rail = ref(true)
+
+// user login auth part
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn); // Dynamický stav
+const loggedUser = computed(() => authStore.user); // Dynamický stav
+const logout = () => {
+  authStore.logoutUser();
+};
+
 </script>
