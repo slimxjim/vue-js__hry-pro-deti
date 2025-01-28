@@ -1,7 +1,6 @@
 <?php
 include 'cors_allow.php';
 include 'db.php';
-
 include 'CrudController.php';
 
 // Konfigurace pro tabulku GameHistory

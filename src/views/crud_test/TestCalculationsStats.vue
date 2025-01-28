@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-4">
     <v-card class="pa-2" max-width="800">
-      <v-card-title class="text-h6">CalculationsStats API - nefunguje update a ErrorRate</v-card-title>
+      <v-card-title class="text-h6">CalculationsStats API</v-card-title>
       <v-card-text>
         <v-form ref="form">
           <v-row dense>

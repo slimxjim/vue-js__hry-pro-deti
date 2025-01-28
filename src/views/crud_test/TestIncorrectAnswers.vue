@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-4">
     <v-card class="pa-2" max-width="800">
-      <v-card-title class="text-h6">IncorrectAnswers API - Nefunguje Update, změn ErrorID na AnswerID</v-card-title>
+      <v-card-title class="text-h6">IncorrectAnswers API</v-card-title>
       <v-card-text>
         <v-form ref="form">
           <v-row dense>

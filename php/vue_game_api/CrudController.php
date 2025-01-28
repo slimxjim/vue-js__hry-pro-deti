@@ -37,10 +37,9 @@ class CrudController {
     }
 
     private function get($input) {
-        $id = $_GET['id'] ?? null;
-        if ($id) {
+        if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", $id);
+            $stmt->bind_param("i", $_GET["id"]);
         } else {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table}");
         }
@@ -66,19 +65,30 @@ class CrudController {
     }
 
     private function update($input) {
-      $id = $_GET['id'] ?? null;
-      if ($id) {
-          // Sestavíme SQL příkaz s parametry
-          $set = implode(", ", array_map(fn($col) => "$col = ?", $this->columns));
+      // Ujistíme se, že ID je poskytnuto v URL
+      if (isset($_GET["id"])) {
+          // Sestavení části SQL pro SET s běžnou anonymní funkcí
+          $set = implode(", ", array_map(function($col) {
+              return "$col = ?";
+          }, $this->columns));
+  
+          // Určujeme datové typy pro bind_param
           $types = $this->getParamTypes($input) . "i"; // Přidáme typ pro ID
   
-          // Připravíme data pro bind_param
-          $values = array_values($input); // Hodnoty sloupců
-          $values[] = $id; // Přidáme ID na konec
+          // Připravíme hodnoty pro bind_param
+          $values = array_values($input); // Hodnoty pro sloupce
+          $values[] = $_GET["id"]; // Přidáme ID na konec
   
-          // Připravíme a provedeme dotaz
+          // Připravíme SQL dotaz pro UPDATE
           $stmt = $this->conn->prepare("UPDATE {$this->table} SET $set WHERE {$this->primaryKey} = ?");
-          $stmt->bind_param($types, ...$values);
+  
+          // Spojíme typy a hodnoty pro bind_param
+          $bindParams = array_merge([$types], $values);
+          
+          // Provádíme bind_param s rozbalením pole
+          $stmt->bind_param(...$bindParams);
+  
+          // Provedeme dotaz
           if ($stmt->execute()) {
               echo json_encode(["message" => "Record updated"]);
           } else {
@@ -89,13 +99,12 @@ class CrudController {
           http_response_code(400);
           echo json_encode(["error" => "ID is required for updating"]);
       }
-  }
+    }
 
     private function delete($input) {
-        $id = $_GET['id'] ?? null;
-        if ($id) {
+        if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("DELETE FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", $id);
+            $stmt->bind_param("i", $_GET["id"]);
             if ($stmt->execute()) {
                 echo json_encode(["message" => "Record deleted"]);
             } else {

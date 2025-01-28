@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-4">
     <v-card class="pa-2" max-width="600">
-      <v-card-title class="text-h6">Test UsedExamples REST API - nefunguje update</v-card-title>
+      <v-card-title class="text-h6">Test UsedExamples REST API</v-card-title>
       <v-card-text>
         <v-form ref="form">
           <v-row dense>
