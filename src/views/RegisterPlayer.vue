@@ -1,14 +1,50 @@
 <template>
-  <div>
-    <form @submit.prevent="register">
-      <input type="text" v-model="name" placeholder="Name" required />
-      <input type="text" v-model="username" placeholder="Username" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <input type="number" v-model="age" placeholder="Age" />
-      <input type="number" v-model="classNumber" placeholder="Class Number" />
-      <button type="submit">Register</button>
-    </form>
-  </div>
+  <v-container>
+    <v-form @submit.prevent="register">
+      <v-text-field
+        v-model="name"
+        label="Name"
+        dense
+        hide-details
+        required
+        class="mb-2"
+      />
+      <v-text-field
+        v-model="username"
+        label="Username"
+        dense
+        hide-details
+        required
+        class="mb-2"
+      />
+      <v-text-field
+        v-model="password"
+        label="Password"
+        type="password"
+        dense
+        hide-details
+        required
+        class="mb-2"
+      />
+      <v-text-field
+        v-model="age"
+        label="Age"
+        type="number"
+        dense
+        hide-details
+        class="mb-2"
+      />
+      <v-text-field
+        v-model="classNumber"
+        label="Class Number"
+        type="number"
+        dense
+        hide-details
+        class="mb-2"
+      />
+      <v-btn type="submit" small>Register</v-btn>
+    </v-form>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -50,3 +86,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.v-text-field input {
+  font-size: 12px;
+}
+
+.v-btn {
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+}
+</style>

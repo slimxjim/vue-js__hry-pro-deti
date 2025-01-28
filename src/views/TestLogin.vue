@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 
@@ -69,7 +69,7 @@ const showLoginDialog = () => {
 
 // Funkce pro odhlášení
 const logout = () => {
-  authStore.logoutUser();
+  authStore.logout();
 };
 
 // Funkce pro odeslání přihlašovacích údajů
@@ -82,7 +82,7 @@ const submitLogin = async () => {
   try {
     // Simulace přihlášení
     const user = { email: email.value }; // Zde volání API
-    await authStore.loginUser(email.value, password.value);
+    authStore.login(user);
 
     alert('Přihlášení úspěšné!');
     dialogVisible.value = false; // Zavřít dialog po úspěšném přihlášení

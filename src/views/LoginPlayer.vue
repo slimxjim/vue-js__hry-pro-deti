@@ -1,40 +1,54 @@
 <template>
   <div>
-    <form @submit.prevent="login">
-      <input type="text" v-model="username" placeholder="Username" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
+    <v-btn v-if="!isLoggedIn" @click="showLoginDialog">Přihlásit</v-btn>
+    <v-btn v-else @click="handleLogout">
+      Odhlásit ({{ user?.email }})
+    </v-btn>
+
+    <v-dialog v-model="dialogVisible" max-width="400">
+      <v-card>
+        <v-card-title>Přihlášení</v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="submitLogin">
+            <v-text-field v-model="email" label="Email" required />
+            <v-text-field v-model="password" label="Heslo" type="password" required />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="primary" @click="submitLogin">Přihlásit</v-btn>
+          <v-btn text @click="dialogVisible = false">Zrušit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue';
-import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
-export default {
-  setup() {
-    const username = ref('tomas');
-    const password = ref('admin');
+const authStore = useAuthStore();
+const { isLoggedIn, user, loginUser, logoutUser } = authStore;
 
-    const login = async () => {
-      try {
-        const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL + '/login.php';
-        const response = await axios.post(API_BASE_URL, {
-          username: username.value,
-          password: password.value,
-        });
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+const dialogVisible = ref(false);
+const email = ref('');
+const password = ref('');
 
-    return {
-      username,
-      password,
-      login,
-    };
-  },
+const showLoginDialog = () => {
+  dialogVisible.value = true;
+};
+
+const submitLogin = async () => {
+  try {
+    await loginUser(email.value, password.value);
+    dialogVisible.value = false; // Zavřít dialog
+  } catch (error: any) {
+    alert(error.message);
+  }
+};
+
+const handleLogout = async () => {
+  await logoutUser();
 };
 </script>
