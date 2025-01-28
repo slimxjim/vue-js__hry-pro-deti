@@ -23,6 +23,7 @@
 
         <v-divider></v-divider>
 
+        <!-- https://pictogrammers.com/library/mdi/icon/database/ -->
         <v-list density="compact" nav>
           <v-list-item
               prepend-icon="mdi-home-city"
@@ -59,6 +60,12 @@
               title="Animace - hřiště"
               value="animace"
               router to="/animation-playground"
+          ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-database "
+              title="CRUD Test"
+              value="crud-test"
+              router to="/crud-test"
           ></v-list-item>
         </v-list>
       </v-navigation-drawer>

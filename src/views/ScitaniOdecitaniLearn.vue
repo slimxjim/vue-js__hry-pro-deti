@@ -123,19 +123,19 @@
               <button @click="() => stopWatcher.reset()">Reset</button> |
             </div>
             <hr/>
-            <div>
-              <h1>History Learning Data:</h1>
-              <ul>
-                <li v-for="doc in historyLearningDocs" :key="doc.id">
-                  <p>Player Name: {{ doc.playerName }}</p>
-                  <p>Question: {{ doc.question }}</p>
-                  <p>User Answer: {{ doc.userAnswer }}</p>
-                  <p>Correct Answer: {{ doc.correctAnswer }}</p>
-                  <p>Is Correct: {{ doc.isCorrect }}</p>
-                  <p>Time (ms): {{ doc.timeMs }}</p>
-                </li>
-              </ul>
-            </div>
+<!--            <div>-->
+<!--              <h1>History Learning Data:</h1>-->
+<!--              <ul>-->
+<!--                <li v-for="doc in historyLearningDocs" :key="doc.id">-->
+<!--                  <p>Player Name: {{ doc.playerName }}</p>-->
+<!--                  <p>Question: {{ doc.question }}</p>-->
+<!--                  <p>User Answer: {{ doc.userAnswer }}</p>-->
+<!--                  <p>Correct Answer: {{ doc.correctAnswer }}</p>-->
+<!--                  <p>Is Correct: {{ doc.isCorrect }}</p>-->
+<!--                  <p>Time (ms): {{ doc.timeMs }}</p>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </div>-->
             <hr/>
             <div v-for="(entry, index) in history" :key="index" class="history-entry">
               <div :style="{ fontWeight: index === 0 ? 'bold' : 'normal'}">
@@ -187,6 +187,7 @@ const configLearningMode = true;
 // ----------
 
 //Firebase:
+/*
 const historyLearningDocs = ref([]);
 
 const fetchHistoryLearningDocs = async () => {
@@ -204,6 +205,7 @@ const fetchHistoryLearningDocs = async () => {
 onMounted(() => {
   fetchHistoryLearningDocs();
 });
+*/
 // ----------
 
 
