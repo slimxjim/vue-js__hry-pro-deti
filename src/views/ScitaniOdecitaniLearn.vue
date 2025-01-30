@@ -26,7 +26,9 @@
                 <v-col class="d-flex justify-start w-100">
                   <v-card :class="[isActivePlayerClass('Tom'), 'card-player']">
                     <div class="player">
-                      <h2>Tom</h2>
+                      <h2>
+                        <PlayerView/>
+                      </h2>
                     </div>
                   </v-card>
                 </v-col>
@@ -176,6 +178,7 @@ import { useMouse } from '@vueuse/core'
 import { StopWatcher } from '@/composable/stopWatch'
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/composable/firebase'
+import PlayerView from '@/components/user_management/PlayerView.vue'
 
 
 const { x, y } = useMouse()

@@ -18,6 +18,20 @@ HP NTB: `F:/_D/PROJECTS/PROGRAMMING/WEB_APP/VueJS/hry-pro-deti-vuejs`
 ---
 
 # TODO:
+
+### 2025-01-30 19:38:57:
+#### Učení, zatím jen..
+- vytvořit objekt Game a historii tahů pro opětovné pokračování, Level
+- - load/save stavu hry
+- start Game, pause Game (save to DB)
+- vytvořit composable pro time (start/stop, get)
+- Game metody nextQuestion -> generování, answerQuestion -> uložení do DB, 
+- ukládání stavu view při přepnutí -> call save/load (workaround)
+
+Další:
+- načíst statistiku a minimálně v učení udělat škálu barev podle časů a chybovosti (chyba - škála červených, sytá nejvíce chyb) správně - škála zelených podle rychlosti - sytá nejlepší
+
+---
 ## vylepšit hru:
 - hráč proti PC, monster - obrázek
 - animace kulek, střelby: https://jsfiddle.net/5bcncsv2/- plusové příklady seberou příšeře jen třetinu damage

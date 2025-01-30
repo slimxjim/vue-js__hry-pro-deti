@@ -14,21 +14,12 @@
   />
   <v-btn @click="revealNextPiece">Next</v-btn>
 
-  <Register>
-
-  </Register>
-  <Login>
-
-  </Login>
-
 </template>
 
 <script setup lang="ts">
 import AnimeSprite from "@/components/playground/AnimeSprite.vue";
 import { ref } from 'vue'
 import PuzzleImage from '@/components/PuzzleImage.vue'
-import Register from '@/views/RegisterPlayer.vue'
-import Login from '@/views/LoginPlayer.vue'
 
 const puzzleRef = ref();
 

@@ -62,6 +62,7 @@
               router to="/animation-playground"
           ></v-list-item>
           <v-list-item
+              v-if="isLoggedIn && (loggedUser as any)?.Username === 'admin'"
               prepend-icon="mdi-database "
               title="CRUD Test"
               value="crud-test"
