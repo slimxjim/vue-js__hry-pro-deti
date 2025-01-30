@@ -5,7 +5,7 @@
       <v-text-field label="Heslo" v-model="password" type="password" />
       <v-btn type="submit">Přihlásit</v-btn>
     </v-form>
-    <v-btn v-if="isLoggedIn" @click="logout">Odhlásit</v-btn>
+    <v-btn v-if="isLoggedIn" @click="logout">Odhlásit ({{ (user as any)?.Name }})</v-btn>
   </v-card>
   <br/>
   <v-card>
@@ -22,6 +22,7 @@ import RegisterPlayer from '@/views/RegisterPlayer.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore();
+const user = computed(() => authStore.user);
 
 // Reaktivní stav dialogu
 const dialogVisible = ref(false);

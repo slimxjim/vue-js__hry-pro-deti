@@ -3,7 +3,7 @@
     <!-- Dynamické tlačítko -->
     <v-btn v-if="!isLoggedIn" @click="showLoginDialog" color="primary">Přihlásit</v-btn>
     <v-btn v-else @click="logout" color="secondary">
-      Odhlásit ({{ user?.email }})
+      Odhlásit ({{ (user as any)?.Name }})
     </v-btn>
 
     <!-- Přihlašovací dialog -->
@@ -31,7 +31,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn color="primary" @click="submitLogin">Přihlásit</v-btn>
-          <v-btn text @click="dialogVisible = false">Zrušit</v-btn>
+          <v-btn @click="dialogVisible = false">Zrušit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 

@@ -76,7 +76,7 @@
             <pre v-html="JSON.stringify(loggedUser, null, 2)"></pre>
           </v-card>
           <v-btn v-if="!isLoggedIn" >Přihlásit</v-btn><!-- @click="login" -->
-          <v-btn v-if="isLoggedIn" @click="logout">Odhlásit</v-btn>
+          <v-btn v-if="isLoggedIn" @click="logout">Odhlásit ({{ (user as any)?.Name }})</v-btn>
         </div>
 
       </v-navigation-drawer>
@@ -106,6 +106,7 @@ const rail = ref(true)
 
 // user login auth part
 const authStore = useAuthStore();
+const user = computed(() => authStore.user);
 const isLoggedIn = computed(() => authStore.isLoggedIn); // Dynamický stav
 const loggedUser = computed(() => authStore.user); // Dynamický stav
 const logout = () => {

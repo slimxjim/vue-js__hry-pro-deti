@@ -3,7 +3,7 @@
     <!-- Dynamické tlačítko -->
     <v-btn v-if="!isLoggedIn" @click="showLoginDialog" color="primary">Přihlásit</v-btn>
     <v-btn v-else @click="logout" color="secondary">
-      Odhlásit ({{ user?.email }})
+      Odhlásit ({{ (user as any)?.Name }})
     </v-btn>
 
     <!-- Přihlašovací dialog -->
@@ -31,7 +31,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn color="primary" @click="submitLogin">Přihlásit</v-btn>
-          <v-btn text @click="dialogVisible = false">Zrušit</v-btn>
+          <v-btn @click="dialogVisible = false">Zrušit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -69,7 +69,7 @@ const showLoginDialog = () => {
 
 // Funkce pro odhlášení
 const logout = () => {
-  authStore.logout();
+  authStore.logoutUser();
 };
 
 // Funkce pro odeslání přihlašovacích údajů
@@ -82,7 +82,7 @@ const submitLogin = async () => {
   try {
     // Simulace přihlášení
     const user = { email: email.value }; // Zde volání API
-    authStore.login(user);
+    authStore.loginUser(email.value, password.value);
 
     alert('Přihlášení úspěšné!');
     dialogVisible.value = false; // Zavřít dialog po úspěšném přihlášení
