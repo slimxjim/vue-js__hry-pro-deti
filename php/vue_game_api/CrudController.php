@@ -109,7 +109,7 @@ class CrudController {
     private function delete($input) {
         if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("DELETE FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", (int)$_GET["id"]);
+            $stmt->bind_param("i", $_GET["id"]);
             if ($stmt->execute()) {
                 echo json_encode(["message" => "Record deleted"]);
             } else {
