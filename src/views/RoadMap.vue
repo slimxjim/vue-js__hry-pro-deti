@@ -69,14 +69,13 @@
           ></v-list-item>
         </v-list>
 
-        <v-divider>User</v-divider>
 
-        <div>
+        <div v-if="!rail">
+          <v-divider>User</v-divider>
           <v-card v-if="isLoggedIn">
             <pre v-html="JSON.stringify(loggedUser, null, 2)"></pre>
           </v-card>
-          <v-btn v-if="!isLoggedIn" >Přihlásit</v-btn><!-- @click="login" -->
-          <v-btn v-if="isLoggedIn" @click="logout">Odhlásit ({{ (user as any)?.Name }})</v-btn>
+          <LoginUserFlow/>
         </div>
 
       </v-navigation-drawer>
@@ -99,6 +98,7 @@
 import { computed, ref } from 'vue'
 import '@mdi/font/css/materialdesignicons.css'
 import { useAuthStore } from '@/stores/auth'
+import LoginUserFlow from '@/components/user_management/LoginUserFlow.vue'
 
 const avatarPath = `${import.meta.env.BASE_URL}images/bird.jpeg`;
 const drawer = ref(true)
@@ -106,11 +106,7 @@ const rail = ref(true)
 
 // user login auth part
 const authStore = useAuthStore();
-const user = computed(() => authStore.user);
 const isLoggedIn = computed(() => authStore.isLoggedIn); // Dynamický stav
 const loggedUser = computed(() => authStore.user); // Dynamický stav
-const logout = () => {
-  authStore.logoutUser();
-};
 
 </script>
