@@ -46,6 +46,7 @@ CREATE TABLE GameHistory (
     TimeLimitSeconds INT,                    -- Set time for the game
     CurrentLevelID INT,                      -- Current level ID
     LastExpression VARCHAR(255),             -- Last expression (e.g., "5 + 3")
+    Device --Desktop/Mobile
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
     FOREIGN KEY (CurrentLevelID) REFERENCES Levels(LevelID)
 );
@@ -58,9 +59,11 @@ CREATE TABLE TurnHistory (
     Operator VARCHAR(2),                     -- Operator (+, -)
     OperandB INT,                            -- Operand B
     CorrectAnswer INT,                       -- Correct result
+    Device --Desktop/Mobile
     PlayerAnswer INT,                        -- Player's answer
     IsCorrect BOOLEAN,                       -- Whether the answer was correct
-    AnswerTimeMs INT,                        -- Time taken to answer (ms)
+    AnswerTimeMsFirst INT,                   -- Time taken to answer (ms) until first button is pressed on the numpad
+    AnswerTimeMsTotal INT,                   -- Time taken to answer (ms) until OK is pressed
     FOREIGN KEY (GameID) REFERENCES GameHistory(GameID)
 );
 
@@ -84,6 +87,7 @@ CREATE TABLE CalculatingStats (
     TotalAttempts INT,                       -- Total attempts for this calculation problem
     CorrectAttempts INT,                     -- Total correct attempts
     IncorrectAttempts INT,                   -- Total incorrect attempts
+    Device --Desktop/Mobile
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
     FOREIGN KEY (CalculationID) REFERENCES UsedCalculations(CalculationID)
 );
@@ -99,6 +103,7 @@ CREATE TABLE IncorrectAnswers (
     PlayerAnswer INT,                         -- Player's incorrect answer
     AnswerTimeMs INT,                         -- Time taken to answer (ms)
     LevelID INT,                              -- Level from which the calculation came
+    Device --Desktop/Mobile
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
     FOREIGN KEY (LevelID) REFERENCES Levels(LevelID)
 );

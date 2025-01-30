@@ -39,7 +39,7 @@ class CrudController {
     private function get($input) {
         if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", $_GET["id"]);
+            $stmt->bind_param("i", (int)$_GET["id"]);
         } else {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table}");
         }
@@ -74,18 +74,23 @@ class CrudController {
   
           // Určujeme datové typy pro bind_param
           $types = $this->getParamTypes($input) . "i"; // Přidáme typ pro ID
-  
+          // echo(" - types = ".print_r($types)." | ");
+
           // Připravíme hodnoty pro bind_param
           $values = array_values($input); // Hodnoty pro sloupce
-          $values[] = $_GET["id"]; // Přidáme ID na konec
+          $values[] = (int)$_GET["id"]; // Přidáme ID na konec
   
           // Připravíme SQL dotaz pro UPDATE
-          $stmt = $this->conn->prepare("UPDATE {$this->table} SET $set WHERE {$this->primaryKey} = ?");
-  
+          $updateQuery = "UPDATE {$this->table} SET $set WHERE {$this->primaryKey} = ?";
+          //echo("updateQuery = " . $updateQuery . "<br>\n");
+          $stmt = $this->conn->prepare($updateQuery);
+          //$input = $this->prepareValues($input);
+          //echo("input ".print_r($input)." \n <br> \n prepareValues ".print_r($this->prepareValues($values)));
           // Spojíme typy a hodnoty pro bind_param
-          $bindParams = array_merge([$types], $values);
+          $bindParams = array_merge([$types], $this->prepareValues($values));
           
           // Provádíme bind_param s rozbalením pole
+          // echo(" - bindParams = ".print_r($bindParams)." >>> ");
           $stmt->bind_param(...$bindParams);
   
           // Provedeme dotaz
@@ -104,7 +109,7 @@ class CrudController {
     private function delete($input) {
         if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("DELETE FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", $_GET["id"]);
+            $stmt->bind_param("i", (int)$_GET["id"]);
             if ($stmt->execute()) {
                 echo json_encode(["message" => "Record deleted"]);
             } else {
@@ -125,5 +130,15 @@ class CrudController {
             return 's';
         }, $input));
     }
+
+    private function prepareValues($input) {
+      $arr = $input;
+      foreach ($arr as $key => $value) {
+          if (is_bool($value)) {
+              $arr[$key] = (int) $value;
+          }
+      }
+      return $arr;
+  }
 }
 ?>

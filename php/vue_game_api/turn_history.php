@@ -12,7 +12,9 @@ $columns = [
     'CorrectAnswer',
     'PlayerAnswer',
     'IsCorrect',
-    'AnswerTimeMs'
+    'AnswerTimeFirstMs',
+    'AnswerTimeTotalMs',
+    'Device'
 ];
 
 $primaryKey = 'TurnID';

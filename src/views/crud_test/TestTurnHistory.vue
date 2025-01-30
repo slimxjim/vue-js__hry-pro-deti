@@ -68,11 +68,23 @@
             <v-col cols="12" md="6">
               <v-text-field
                 dense
-                label="Answer Time (ms)"
-                v-model.number="turnData.AnswerTimeMs"
+                label="Answer Time First (ms)"
+                v-model.number="turnData.AnswerTimeFirstMs"
                 type="number"
                 outlined
               ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                dense
+                label="Answer Time Total (ms)"
+                v-model.number="turnData.AnswerTimeTotalMs"
+                type="number"
+                outlined
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field dense label="Device" v-model.number="turnData.Device" type="string" outlined></v-text-field>
             </v-col>
           </v-row>
         </v-form>
@@ -106,7 +118,9 @@ const turnData = ref({
   CorrectAnswer: 15,
   PlayerAnswer: 10,
   IsCorrect: true,
-  AnswerTimeMs: 560,
+  AnswerTimeFirstMs: 560,
+  AnswerTimeTotalMs: 1560,
+  Device: "desktop"
 });
 
 const response = ref<any>(null);
@@ -123,7 +137,9 @@ const resetForm = () => {
     CorrectAnswer: 0,
     PlayerAnswer: 0,
     IsCorrect: false,
-    AnswerTimeMs: 0,
+    AnswerTimeFirstMs: 0,
+    AnswerTimeTotalMs: 0,
+    Device: "mobile"
   };
   response.value = null;
 };

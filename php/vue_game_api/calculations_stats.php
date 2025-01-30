@@ -12,7 +12,8 @@ $columns = [
     'ErrorRate',
     'TotalAttempts',
     'CorrectAttempts',
-    'IncorrectAttempts'
+    'IncorrectAttempts',
+    'Device'
 ];
 $primaryKey = 'StatID';
 

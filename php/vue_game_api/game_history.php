@@ -13,7 +13,8 @@ $columns = [
     'LivesOpponent',
     'TimeLimitSeconds',
     'CurrentLevelID',
-    'LastExpression'
+    'LastExpression',
+    'Device'
 ];
 $primaryKey = 'GameID';
 

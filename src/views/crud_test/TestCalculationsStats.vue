@@ -29,6 +29,9 @@
             <v-col cols="12" md="6">
               <v-text-field dense label="Incorrect Attempts" v-model.number="statsData.IncorrectAttempts" type="number" outlined></v-text-field>
             </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field dense label="Device" v-model.number="statsData.Device" type="string" outlined></v-text-field>
+            </v-col>
           </v-row>
         </v-form>
         <v-row justify="center" class="mt-3">
@@ -61,6 +64,7 @@ const statsData = ref({
   TotalAttempts: 20,
   CorrectAttempts: 5,
   IncorrectAttempts: 15,
+  Device: "desktop"
 });
 
 const response = ref<any>(null);
@@ -78,6 +82,7 @@ const resetForm = () => {
     TotalAttempts: 0,
     CorrectAttempts: 0,
     IncorrectAttempts: 0,
+    Device: "mobile"
   };
   response.value = null;
 };

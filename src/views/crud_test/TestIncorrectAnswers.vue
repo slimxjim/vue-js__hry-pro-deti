@@ -29,6 +29,9 @@
             <v-col cols="12" md="6">
               <v-text-field dense label="Level ID" v-model.number="answerData.LevelID" type="number" outlined></v-text-field>
             </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field dense label="Device" v-model.number="answerData.Device" type="string" outlined></v-text-field>
+            </v-col>
           </v-row>
         </v-form>
         <v-row justify="center" class="mt-3">
@@ -61,6 +64,7 @@ const answerData = ref({
   PlayerAnswer: 10,
   AnswerTimeMs: 4560,
   LevelID: 3,
+  Device: "desktop"
 });
 
 const response = ref<any>(null);
@@ -78,6 +82,7 @@ const resetForm = () => {
     PlayerAnswer: 10,
     AnswerTimeMs: 4560,
     LevelID: 1,
+    Device: "mobile"
   };
   response.value = null;
 };

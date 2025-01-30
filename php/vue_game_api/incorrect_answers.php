@@ -12,7 +12,8 @@ $columns = [
     'CorrectAnswer',
     'PlayerAnswer',
     'AnswerTimeMs',
-    'LevelID'
+    'LevelID',
+    'Device'
 ];
 
 $primaryKey = 'ErrorID';
