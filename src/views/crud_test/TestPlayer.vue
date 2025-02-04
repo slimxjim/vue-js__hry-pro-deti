@@ -1,7 +1,6 @@
 <template>
   <v-container class="pa-4">
     <v-card class="pa-2" max-width="600">
-      LEVEL: {{ getLevel(1) }} = {{ level?.levelID }}
       <v-card-title class="text-h6">Test Players REST API</v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -70,19 +69,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import axios from "axios";
-import type { CalculationLevel } from '@/components/types/calculationTypes'
-import { DbCalculationCrudService } from '@/components/services/DbCalculationCrudService'
-import { useAuthStore } from '@/stores/auth'
-import { useLevelStore } from '@/stores/levels'
+import { ref } from 'vue'
+import axios from 'axios'
 
 
 // const dbServiceLevels: DbCalculationCrudService<CalculationLevel> = new DbCalculationCrudService('/levels.php');
 // console.log("Levels... ", dbServiceLevels.fetchItem(1));
 
-const levelStore = useLevelStore();
-const { level, getLevel } = levelStore;
 
 // console.log('levels...', level.value);
 

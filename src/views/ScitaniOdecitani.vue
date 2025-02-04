@@ -142,7 +142,7 @@ import {
   getCrieteriaInfo, getSign,
   type HistoryRecord,
   type Interval
-} from "@/composable/AddSubUtils";
+} from "@/utils/AddSubUtils";
 
 // CONFIGURATION
 const maxLives = 3;

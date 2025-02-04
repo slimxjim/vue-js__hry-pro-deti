@@ -1,6 +1,6 @@
 // src/composables/useUserApi.ts
 import axios from 'axios';
-import type { User } from '@/components/types/calculationTypes'
+import type { User } from '@/types/calculationTypes'
 
 export function useUserApi() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;

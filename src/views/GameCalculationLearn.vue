@@ -20,9 +20,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRaw, unref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { GameCalculationLearnService } from '@/components/services/GameCalculationLearnService'
-import { type CalculationLevel, ECalculationOperator, type GameCalculation } from '@/components/types/calculationTypes'
-import { DbCalculationCrudService } from '@/components/services/DbCalculationCrudService'
+import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
+import { type CalculationLevel, ECalculationOperator, type GameCalculation } from '@/types/calculationTypes'
+import { DbCalculationCrudService } from '@/services/DbCalculationCrudService'
 import { useGameStore } from '@/stores/useGameStore'
 
 

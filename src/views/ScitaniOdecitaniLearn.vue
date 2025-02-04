@@ -171,13 +171,11 @@ import {
   getCrieteriaInfo, getSign,
   type HistoryRecord,
   type Interval, padWithNonBreakingSpaces
-} from "@/composable/AddSubUtils";
+} from "@/utils/AddSubUtils";
 import StopWatch from "@/components/StopWatch.vue";
 import PuzzleImage from '@/components/PuzzleImage.vue'
 import { useMouse } from '@vueuse/core'
-import { StopWatcher } from '@/composable/stopWatch'
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/composable/firebase'
+import { StopWatcher } from '@/services/stopWatch'
 import PlayerView from '@/components/user_management/PlayerView.vue'
 
 
@@ -188,29 +186,6 @@ const stopWatcher: StopWatcher = new StopWatcher();
 const confTimeLeft = 20;
 const configLearningMode = true;
 // ----------
-
-//Firebase:
-/*
-const historyLearningDocs = ref([]);
-
-const fetchHistoryLearningDocs = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'history-learning'));
-    historyLearningDocs.value = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  } catch (error) {
-    console.error("Error fetching documents: ", error);
-  }
-};
-
-onMounted(() => {
-  fetchHistoryLearningDocs();
-});
-*/
-// ----------
-
 
 const learningMode = ref<boolean>(configLearningMode);
 const currentPlayer = ref('Tom')

@@ -8,7 +8,7 @@ import {
   type GameCalculation,
   type GameState,
   type User
-} from '@/components/types/calculationTypes'
+} from '@/types/calculationTypes'
 import { TimestampUtils } from '@/utils/TimestampUtils'
 
 export class GameCalculationLearnService {

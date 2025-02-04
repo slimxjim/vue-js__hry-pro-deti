@@ -1,9 +1,9 @@
 import { computed, ref, unref } from 'vue'
 import { defineStore } from 'pinia'
-import type { CalculationLevel, GameCalculation, User } from '@/components/types/calculationTypes'
-import { GameCalculationLearnService } from '@/components/services/GameCalculationLearnService'
+import type { CalculationLevel, GameCalculation, User } from '@/types/calculationTypes'
+import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
 import { useAuthStore } from '@/stores/auth'
-import { DbCalculationCrudService } from '@/components/services/DbCalculationCrudService'
+import { DbCalculationCrudService } from '@/services/DbCalculationCrudService'
 
 export const useGameStore = defineStore('game', () => {
   const game = ref<GameCalculation | null>(null);
