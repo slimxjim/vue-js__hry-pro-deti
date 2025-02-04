@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoggedIn"><strong>{{ (user as any)?.Name }}</strong> (věk: {{ (user as any)?.Age }})</div>
+  <div v-if="isLoggedIn"><strong>{{ user?.name }}</strong> (věk: {{ user?.age }})</div>
   <div v-else>Hráč</div>
 </template>
 

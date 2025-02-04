@@ -5,7 +5,7 @@
       <v-text-field label="Heslo" v-model="password" type="password" />
       <v-btn type="submit">Přihlásit</v-btn>
     </v-form>
-    <v-btn v-if="isLoggedIn" @click="logout">Odhlásit ({{ (user as any)?.Name }})</v-btn>
+    <v-btn v-if="isLoggedIn" @click="logout">Odhlásit ({{ user?.name }})</v-btn>
   </v-card>
   <br/>
   <v-card>

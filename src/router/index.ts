@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: '/scitani-odecitani-uceni',
       name: 'scitani-odecitani-uceni',
-        component: () => import('../views/ScitaniOdecitaniLearn.vue')
+        component: () => import('../views/GameCalculationLearn.vue')
     },
     {
       path: '/rozklad',

@@ -2,19 +2,21 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue'
 import { useUserApi } from '@/composable/useUserApi'
+import type { User } from '@/components/types/calculationTypes'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(null); // Uchování uživatele
+  const user = ref<User | undefined | null>(null); // Uchování uživatele
   const isLoggedIn = computed(() => user.value !== null);
 
   const { login, fetchUserData, logout } = useUserApi();
 
-  const loginUser = async (email: string, password: string) => {
+  const loginUser = async (username: string, password: string) => {
     try {
-      const userData = await login(email, password); // API volání
+      const userData: User = await login(username, password); // API volání
       user.value = userData; // Uložení do stavu
       localStorage.setItem('user', JSON.stringify(userData)); // Volitelně uložení do localStorage
     } catch (error) {
+      console.error("Login failed:", error); // Logování chyby
       throw error;
     }
   };
@@ -31,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
       const userData = await fetchUserData(userId); // API volání
       user.value = userData; // Uložení do stavu
     } catch (error) {
+      console.error("fetchAndSetUserData failed:", error); // Logování chyby
       throw error;
     }
   };
@@ -41,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null;
       localStorage.removeItem('user');
     } catch (error) {
+      console.error("logoutUser failed:", error); // Logování chyby
       throw error;
     }
   };

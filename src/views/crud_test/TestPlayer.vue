@@ -1,6 +1,7 @@
 <template>
   <v-container class="pa-4">
     <v-card class="pa-2" max-width="600">
+      LEVEL: {{ getLevel(1) }} = {{ level?.levelID }}
       <v-card-title class="text-h6">Test Players REST API</v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -53,6 +54,7 @@
         <v-row justify="center" class="mt-3">
           <v-btn small color="primary" @click="createPlayer">Create</v-btn>
           <v-btn small color="info" @click="fetchPlayers">Fetch All</v-btn>
+          <v-btn small color="gray" @click="fetchPlayer">Fetch ID</v-btn>
           <v-btn small color="warning" @click="updatePlayer">Update</v-btn>
           <v-btn small color="error" @click="deletePlayer">Delete</v-btn>
         </v-row>
@@ -68,8 +70,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from 'vue'
 import axios from "axios";
+import type { CalculationLevel } from '@/components/types/calculationTypes'
+import { DbCalculationCrudService } from '@/components/services/DbCalculationCrudService'
+import { useAuthStore } from '@/stores/auth'
+import { useLevelStore } from '@/stores/levels'
+
+
+// const dbServiceLevels: DbCalculationCrudService<CalculationLevel> = new DbCalculationCrudService('/levels.php');
+// console.log("Levels... ", dbServiceLevels.fetchItem(1));
+
+const levelStore = useLevelStore();
+const { level, getLevel } = levelStore;
+
+// console.log('levels...', level.value);
 
 const form = ref(null);
 const playerData = ref({
@@ -122,6 +137,18 @@ const updatePlayer = async () => {
     const id = prompt("Enter the PlayerID to update:");
     if (!id) return;
     const res = await axios.put(`${API_BASE_URL}?id=${id}`, playerData.value);
+    response.value = res.data;
+  } catch (err: any) {
+    response.value = err.response?.data || err.message;
+  }
+};
+
+// Fetch player
+const fetchPlayer = async () => {
+  try {
+    const id = prompt("Enter the PlayerID to update:");
+    if (!id) return;
+    const res = await axios.get(`${API_BASE_URL}/players.php'?id=${id}`);
     response.value = res.data;
   } catch (err: any) {
     response.value = err.response?.data || err.message;

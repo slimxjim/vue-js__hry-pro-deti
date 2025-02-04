@@ -3,7 +3,7 @@
     <!-- Dynamické tlačítko -->
     <v-btn v-if="!isLoggedIn" @click="showLoginDialog" color="primary">Přihlásit</v-btn>
     <v-btn v-else @click="logout" color="secondary">
-      Odhlásit ({{ (user as any)?.Name }})
+      Odhlásit ({{ user?.name }})
     </v-btn>
 
     <!-- Přihlašovací dialog -->

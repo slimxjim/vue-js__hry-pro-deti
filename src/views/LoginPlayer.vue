@@ -2,7 +2,7 @@
   <div>
     <v-btn v-if="!isLoggedIn" @click="showLoginDialog">Přihlásit</v-btn>
     <v-btn v-else @click="handleLogout">
-      Odhlásit ({{ (user as any)?.Name }})
+      Odhlásit ({{ user?.name }})
     </v-btn>
 
     <v-dialog v-model="dialogVisible" max-width="400">

@@ -39,7 +39,7 @@ class CrudController {
     private function get($input) {
         if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?");
-            $stmt->bind_param("i", (int)$_GET["id"]);
+            $stmt->bind_param("i", $_GET["id"]);
         } else {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table}");
         }

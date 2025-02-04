@@ -97,6 +97,7 @@
         <v-row justify="center" class="mt-3">
           <v-btn small color="primary" @click="createLevel">Create</v-btn>
           <v-btn small color="info" @click="fetchLevels">Fetch All</v-btn>
+          <v-btn small color="gray" @click="fetchLevel">Fetch ID</v-btn>
           <v-btn small color="warning" @click="updateLevel">Update</v-btn>
           <v-btn small color="error" @click="deleteLevel">Delete</v-btn>
         </v-row>
@@ -114,6 +115,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
+import { useCalculationApi } from '@/composable/useCalculationApi'
 
 const form = ref(null);
 const levelData = ref({
@@ -169,6 +171,20 @@ const fetchLevels = async () => {
   } catch (err: any) {
     response.value = err.response?.data || err.message;
   }
+};
+
+// Fetch player
+const {fetchDataById: fetchLevelId} = useCalculationApi('/levels.php');
+
+const fetchLevel = async () => {
+  try {
+    const id = prompt("Enter the PlayerID to update:");
+    if (!id) return;
+    response.value = await fetchLevelId(Number(id));
+  } catch (err: any) {
+    response.value = err.response?.data || err.message;
+  }
+  console.log('loaded level: ', response.value);
 };
 
 // Update level
