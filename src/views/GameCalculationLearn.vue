@@ -3,6 +3,7 @@
   <v-btn small @click="startGame">Start Game</v-btn>
   <v-btn small @click="stopGame">Stop Game</v-btn>
   <v-btn small color="gray" @click="changeLevel">Change level</v-btn>
+  <v-btn small color="gray" @click="answer">answer</v-btn>
   <div v-if="gameStore.isGameActive">
     <p>Game in progress...</p>
   </div>
@@ -23,6 +24,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
+import { EPlayerTurn } from '@/types/calculationTypes'
 
 const gameStore = useGameStore();
 const game =  computed(() => gameStore.game);
@@ -45,6 +47,11 @@ function startGame() {
 
 function stopGame() {
   gameStore.endGame();
+}
+let i = 0;
+
+function answer() {
+  gameStore.answer(1, i++, 10, 15, EPlayerTurn.PLAYER);
 }
 
 </script>

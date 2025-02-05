@@ -54,8 +54,8 @@ export interface CalculationAnswer {
   calculationIndexInGameScenario: number;
   answer?: number;
   isCorrect: boolean;
-  answerTimeFirstMs: string,
-  answerTimeTotalMs: string,
+  answerTimeFirstMs: number,
+  answerTimeTotalMs: number,
   device: EDevice
 }
 

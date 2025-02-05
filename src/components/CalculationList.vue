@@ -29,11 +29,11 @@ const props = defineProps<{
   flex-direction: column;
   width: fit-content;
   padding: 3px;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 .calculation-item {
-  margin-bottom: 1px;
+  margin: 0px;
 }
 
 .calculation-content {
