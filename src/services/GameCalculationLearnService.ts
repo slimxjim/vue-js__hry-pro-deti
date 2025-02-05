@@ -10,16 +10,17 @@ import {
   type User
 } from '@/types/calculationTypes'
 import { TimestampUtils } from '@/utils/TimestampUtils'
+import { logger } from '@/services/Logger'
 
 export class GameCalculationLearnService {
 
   public static REMAINING_TIME_DEFAULT: number = 20;
-  public static IS_SHUFFELED: boolean = false
+  public static IS_SHUFFLED: boolean = false
 
   static createGame(level: CalculationLevel, user: User|undefined ): GameCalculation {
     const game: GameCalculation = {
       gameCreationTimestamp: TimestampUtils.getFormatedTimestamp(),
-      gameScenario: this.generateScenario(level, GameCalculationLearnService.IS_SHUFFELED),
+      gameScenario: this.generateScenario(level, GameCalculationLearnService.IS_SHUFFLED),
       gameState: this.initGameState(),
       gameType: EGameType.LEARNING,
       level: level,
@@ -32,27 +33,56 @@ export class GameCalculationLearnService {
   static generateScenario(level: CalculationLevel, isShuffled?: boolean): Calculation[] {
     const scenario: Calculation[] = [];
     console.log('generating scenario...', level);
+
     for (let a = level.MinA; a <= level.MaxA; a++) {
-      for (let b = level.MinB; b <= level.MaxB && a + b <= level.MaxResult && a + b >= level.MinResult; b++) {
-        const sign = this.getSign(level.Operator);
-        const isAddition = sign === '+';
-        const eq: Calculation = {
-          operandA: a,
-          operator: isAddition ? ECalculationOperator.PLUS : ECalculationOperator.MINUS,
-          operandB: b,
-          correctAnswer: isAddition ? a + b : a - b
+      for (let b = level.MinB; b <= level.MaxB; b++) {
+        for (const operator of [ECalculationOperator.PLUS, ECalculationOperator.MINUS]) {
+          // Generujeme obě varianty (a + b) a (b + a) pro obě operace
+          let result: number = 0;
+          if (operator === ECalculationOperator.PLUS) {
+            result = a + b;
+          } else if (operator === ECalculationOperator.MINUS) {
+            result = a - b;
+          }
+
+          // Zkontrolujeme, zda výsledek spadá do daného rozsahu (pokud je definován)
+          if (
+            (level.MinResult !== undefined && result >= level.MinResult) &&
+            (level.MaxResult !== undefined && result <= level.MaxResult)
+          ) {
+            const eq: Calculation = {
+              operandA: a,
+              operator: operator,
+              operandB: b,
+              correctAnswer: result
+            };
+
+            // Přidáme výpočet do scénáře
+            scenario.push(eq);
+          }
         }
-        // console.log('Pushing calculation: ', eq);
-        scenario.push(eq);
       }
     }
-
     if (isShuffled) {
       this.shuffle(scenario);
     }
-
+    logger.debug('Generated scenario:','',scenario);
     return scenario;
   }
+
+  // static log(...args) {
+  //   // Vytvoříme nový Error objekt pro získání stack trace
+  //   const error = new Error();
+  //   const stackLines = error.stack?.split("\n");
+  //
+  //   if (stackLines && stackLines.length > 2) {
+  //     // Vezmeme volající řádek ze stack trace (index 2 je místo, odkud byla logovací funkce volána)
+  //     const callerLine = stackLines[2].trim();
+  //     console.log.apply(console, [...args, callerLine]); // Předáme všechny argumenty a přidáme info o volání
+  //   } else {
+  //     console.log.apply(console, args); // Fallback
+  //   }
+  // }
 
   static getSign(sign: ECalculationOperator): string {
     switch (sign) {

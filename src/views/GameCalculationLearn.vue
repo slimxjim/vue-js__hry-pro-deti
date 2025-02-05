@@ -6,38 +6,31 @@
   <div v-if="gameStore.isGameActive">
     <p>Game in progress...</p>
   </div>
-
+  <v-card style="width: fit-content;">
+    <CalculationList :calculations="game?.gameScenario || []" />
+  </v-card>
     <v-container>
 <!--      <v-card>-->
 <!--        Level: <pre style="font-size: 9px">{{ initLevel }}</pre>-->
 <!--      </v-card>-->
       <v-card>
-        Game: <pre style="font-size: 9px">{{ gameStore.game }}</pre>
+        Game: <pre style="font-size: 9px">{{ game }}</pre>
       </v-card>
     </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, toRaw, unref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
-import { type CalculationLevel, ECalculationOperator, type GameCalculation } from '@/types/calculationTypes'
-import { DbCalculationCrudService } from '@/services/DbCalculationCrudService'
+import { computed, onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
+import CalculationList from '@/components/CalculationList.vue'
 
-
-// ------------------  New Model 2025-01-31 17:06:01 ----------------------
-// const initLevel = ref<CalculationLevel>();
-
+const gameStore = useGameStore();
+const game =  computed(() => gameStore.game);
 
 onMounted(async () => {
-  // initLevel.value = await fetchLevelId(Number(1));
-  // console.log('loading level...');
-  // initLevel.value = await dbLevels.fetchItem(1);
   // console.log('leaded level:', initLevel.value);
 });
 
-const gameStore = useGameStore();
 
 async function changeLevel(){
   console.log('changeLog');
