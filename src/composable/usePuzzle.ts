@@ -1,5 +1,5 @@
 import { type PuzzleImageModel, PuzzleRevealedState } from '@/types/puzzelTypes'
-import { type Ref, ref, type UnwrapRef } from 'vue'
+import { type Ref, ref } from 'vue'
 
 export function usePuzzleImage() {
 

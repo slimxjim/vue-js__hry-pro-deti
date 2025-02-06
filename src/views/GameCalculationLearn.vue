@@ -35,7 +35,7 @@
               </v-col>
               <v-col class="d-flex justify-start w-100">
                 <GcPuzzle
-                  :puzzle-image-model=puzzleImage
+                  :puzzle-image-model=gameStore.usePuzzle.puzzleImageModel
                   :param_max-height="500"
                   :param_max-width="500"/>
               </v-col>
@@ -124,13 +124,10 @@ import Numpad from '@/components/Numpad.vue'
 import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
 import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
-import { usePuzzleImage } from '@/composable/usePuzzle'
 import { ImageUtils } from '@/utils/ImageUtils'
-import type { PuzzleImageModel } from '@/types/puzzelTypes'
 
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
-const puzzleImage = computed(() => gameStore.puzzleImageModel);
 
 const stopWatch = useStopwatchGlobalStore();
 
