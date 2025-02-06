@@ -17,10 +17,8 @@
 <script setup lang="ts">
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
 import { usePuzzleImage } from '@/composable/usePuzzle'
-import { computed, onMounted, ref, type Ref, type UnwrapRef } from 'vue'
-import type { PuzzleImageModel } from '@/types/puzzelTypes'
+import { onMounted, ref } from 'vue'
 import PuzzleImageGridIlustration from '@/components/game_components/puzzle/PuzzleImageGridIlustration.vue'
-import { preprocessCSS } from 'vite'
 import { ImageUtils } from '@/utils/ImageUtils'
 
 const usePuzzle = usePuzzleImage();
