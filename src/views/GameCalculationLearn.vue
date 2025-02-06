@@ -35,7 +35,7 @@
               </v-col>
               <v-col class="d-flex justify-start w-100">
                 <GcPuzzle
-                  :puzzle-image-model=puzzleImageModel
+                  :puzzle-image-model=puzzleImage
                   :param_max-height="500"
                   :param_max-width="500"/>
               </v-col>
@@ -122,17 +122,15 @@ import GcPlayerInfo from '@/components/game_components/GcPlayerInfo.vue'
 import GcCalculationQuestion from '@/components/game_components/calculation/GcCalculationQuestion.vue'
 import Numpad from '@/components/Numpad.vue'
 import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
-import type { GcTime } from '@/types/GcTime'
 import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
-import PuzzleImageGridIlustration from '@/components/game_components/puzzle/PuzzleImageGridIlustration.vue'
 import { usePuzzleImage } from '@/composable/usePuzzle'
 import { ImageUtils } from '@/utils/ImageUtils'
+import type { PuzzleImageModel } from '@/types/puzzelTypes'
 
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
-
-// const puzzleImageModelRef = computed<PuzzleImageModel | undefined | null>(() => gameStore.usePuzzleImage.puzzleImageModel);
+const puzzleImage = computed(() => gameStore.puzzleImageModel);
 
 const stopWatch = useStopwatchGlobalStore();
 
@@ -143,8 +141,8 @@ const message = ref('Todo Msg - odpověď byla... špatně/sprvně ..něco motiv
 const isPaused = ref<boolean>(false);
 
 //puzzle:
-const usePuzzle = usePuzzleImage();
-const puzzleImageModel = usePuzzle.puzzleImageModel;
+// const usePuzzle = usePuzzleImage();
+// const puzzleImageModel = usePuzzle.puzzleImageModel;
 const imageUrl = "https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg";
 let heightPx = 0;
 let widthPx = 0;
@@ -159,8 +157,8 @@ ImageUtils.getImageDimensions(imageUrl)
   });
 
 function preparePuzzle() {
-  usePuzzle.createPuzzle(imageUrl, widthPx, heightPx, gameStore.game?.gameScenario.length ?? 0);
-  console.log('preparing puzzle: ', usePuzzle.puzzleImageModel);
+  gameStore.usePuzzle.createPuzzle(imageUrl, widthPx, heightPx, gameStore.game?.gameScenario.length ?? 0);
+  console.log('preparing puzzle: ', gameStore.usePuzzle.puzzleImageModel);
 }
 
 // ------------------------
@@ -195,7 +193,7 @@ function togglePause() {
 function doResetGame() {
   gameStore.resetGame();
   isPaused.value = false;
-  usePuzzle.reset();
+  gameStore.usePuzzle.reset();
 }
 
 
@@ -209,7 +207,7 @@ function doAnswer() {
   if (gameStore.getCurrentCalculation()?.correctAnswer === userAnswer.value) {
     //TODO
   }
-  usePuzzle.revealNext();
+  gameStore.usePuzzle.revealNext();
 }
 function doSkipAnswer() {
   gameStore.doSkipAnswer(EPlayerTurn.PLAYER);

@@ -15,6 +15,8 @@ import { DbCalculationCrudService } from '@/services/DbCalculationCrudService'
 import { logger } from '@/services/Logger'
 import type { GcTime } from '@/types/GcTime'
 import { useStopwatch } from '@/composable/useStopwatch'
+import type { PuzzleImageModel } from '@/types/puzzelTypes'
+import { usePuzzleImage } from '@/composable/usePuzzle'
 
 export const useGameStore = defineStore('game', () => {
   const game = ref<GameCalculation | null>(null);
@@ -26,6 +28,9 @@ export const useGameStore = defineStore('game', () => {
 
   const stopWatchFirst = useStopwatch();
   const stopWatchTotal = useStopwatch();
+
+  const usePuzzle = usePuzzleImage();
+  const puzzleImageModel = ref(usePuzzle.puzzleImageModel);
 
   const dbLevels = new DbCalculationCrudService<CalculationLevel>('/levels.php'); //TODO move to service? split state with logic and DB logic?
 
@@ -237,5 +242,7 @@ export const useGameStore = defineStore('game', () => {
     turnTimeFirst,
     stopTurnTimerFirst,
     turnTimeTotal,
+    usePuzzle,
+    puzzleImageModel,
   };
 });
