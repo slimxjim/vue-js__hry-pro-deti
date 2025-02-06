@@ -4,7 +4,7 @@ import {
   ECalculationOperator,
   EGameProgress,
   EGameType,
-  EPlayerTurn,
+  EPlayerTurn, ESign,
   type GameCalculation,
   type GameState,
   type User
@@ -32,16 +32,16 @@ export class GameCalculationLearnService {
 
   static generateScenario(level: CalculationLevel, isShuffled?: boolean): Calculation[] {
     const scenario: Calculation[] = [];
-    console.log('generating scenario...', level);
+    logger.trace('generating scenario...', '', level);
 
     for (let a = level.MinA; a <= level.MaxA; a++) {
       for (let b = level.MinB; b <= level.MaxB; b++) {
-        for (const operator of [ECalculationOperator.PLUS, ECalculationOperator.MINUS]) {
+        for (const operator of [ESign.PLUS, ESign.MINUS]) {
           // Generujeme obě varianty (a + b) a (b + a) pro obě operace
           let result: number = 0;
-          if (operator === ECalculationOperator.PLUS) {
+          if (operator === ESign.PLUS) {
             result = a + b;
-          } else if (operator === ECalculationOperator.MINUS) {
+          } else if (operator === ESign.MINUS) {
             result = a - b;
           }
 
@@ -66,7 +66,7 @@ export class GameCalculationLearnService {
     if (isShuffled) {
       this.shuffle(scenario);
     }
-    logger.debug('Generated scenario:','',scenario);
+    logger.trace('Generated scenario:','',scenario);
     return scenario;
   }
 

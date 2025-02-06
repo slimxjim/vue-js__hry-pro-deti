@@ -29,7 +29,7 @@ export enum LogLevel {
   TRACE // Přidání TRACE úrovně
 }
 class Logger {
-  private static currentLevel: LogLevel = LogLevel.TRACE;
+  private static currentLevel: LogLevel = LogLevel.DEBUG;
   private static fileLogLevels: Map<string, LogLevel> = new Map(); // Uloží loglevel pro jednotlivé soubory
 
   // Nastaví úroveň logování pro celý projekt

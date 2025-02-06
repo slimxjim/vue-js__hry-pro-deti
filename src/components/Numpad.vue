@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch, onMounted, onBeforeUnmount } from 'vue';
+import { defineProps, onBeforeUnmount, onMounted, watch } from 'vue'
 
 // Příjem prop userAnswer
 const props = defineProps<{
@@ -32,19 +32,28 @@ const props = defineProps<{
 }>();
 
 // Dynamické nastavení userAnswer
-const emit = defineEmits<(e: 'update:userAnswer', value: number | undefined) => void>();
+const emit = defineEmits<{
+  (e: 'update:userAnswer', value: number | undefined): void;
+  (e: 'start-answering'): void;
+  (e: 'continue-answering'): void;
+}>();
 
 function appendNumber(num: number) {
+  emit('start-answering');
   emit('update:userAnswer', (props.userAnswer ?? 0) * 10 + num); // Přidání čísla
 }
 
 function backspace() {
   const newValue = Math.floor((props.userAnswer ?? 0) / 10); // Odstranění posledního čísla
   emit('update:userAnswer', newValue !== 0 ? newValue : undefined);
+  if(newValue === 0) {
+    emit('continue-answering');
+  }
 }
 
 function clearAll() {
   emit('update:userAnswer', undefined); // Resetování na 0
+  emit('continue-answering');
 }
 
 const handleKeyPress = (event: KeyboardEvent) => {
@@ -52,6 +61,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
   const num = parseInt(key, 10);
   if (!isNaN(num) && num >= 0 && num <= 9) {
     appendNumber(num); // Call appendNumber if the key pressed is a number
+  }
+
+  if (key === 'Backspace') {
+    backspace();
+  }
+
+  if (key === 'Delete') {
+    clearAll();
   }
 };
 

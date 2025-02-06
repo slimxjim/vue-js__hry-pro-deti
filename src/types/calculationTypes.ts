@@ -1,3 +1,5 @@
+import type { GcTime } from '@/types/GcTime'
+
 export interface GameCalculation {
   gameType: EGameType;
   gameState: GameState;
@@ -19,7 +21,7 @@ export interface GameState {
 export enum EGameProgress {
   STARTED = 'STARTED',
   RUNNING = 'RUNNING',
-  PAUSES = 'PAUSES',
+  PAUSED = 'PAUSED',
   FINISHED = 'FINISHED',
   LEAVED_NOT_FINISHED = 'LEAVED_NOT_FINISHED'
 }
@@ -54,8 +56,8 @@ export interface CalculationAnswer {
   calculationIndexInGameScenario: number;
   answer?: number;
   isCorrect: boolean;
-  answerTimeFirstMs: number,
-  answerTimeTotalMs: number,
+  answerTimeFirst: GcTime,
+  answerTimeTotal: GcTime,
   device: EDevice
 }
 
@@ -80,7 +82,7 @@ export enum EDevice {
 
 export interface Calculation {
   operandA: number;
-  operator: ECalculationOperator;
+  operator: ESign;
   operandB: number;
   correctAnswer: number;
 }
@@ -89,6 +91,11 @@ export enum ECalculationOperator {
   PLUS = "+",
   MINUS = "-",
   PLUS_MINUS = "+-"
+}
+
+export enum ESign {
+  PLUS = "+",
+  MINUS = "-",
 }
 
 export interface GameHistory { //TODO předělat ale i model

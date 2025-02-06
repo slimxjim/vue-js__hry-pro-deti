@@ -176,7 +176,7 @@ import StopWatch from "@/components/StopWatch.vue";
 import PuzzleImage from '@/components/PuzzleImage.vue'
 import { useMouse } from '@vueuse/core'
 import { StopWatcher } from '@/services/stopWatch'
-import PlayerView from '@/components/user_management/PlayerView.vue'
+import PlayerView from '@/components/game_components/player/PlayerCard.vue'
 
 
 const { x, y } = useMouse()

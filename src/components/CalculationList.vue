@@ -4,6 +4,7 @@
     <hr/>
     <div v-for="(calculation, index) in calculations" :key="index" class="calculation-item">
       <div class="calculation-content">
+        <div class="calculation-part">{{ index }} | </div>
         <div class="calculation-part">{{ calculation.operandA }}</div>
         <div class="calculation-part operator">{{ calculation.operator }}</div>
         <div class="calculation-part">{{ calculation.operandB }}</div>
@@ -38,7 +39,13 @@ const props = defineProps<{
 
 .calculation-content {
   display: grid;
-  grid-template-columns: minmax(20px, 1fr) minmax(6px, auto) minmax(20px, 1fr) minmax(6px, auto) minmax(20px, 1fr); /* Minimální šířka pro operátory a rovná se */
+  grid-template-columns:
+          minmax(20px, 1fr)
+          minmax(20px, 1fr)
+          minmax(6px, auto)
+          minmax(20px, 1fr)
+          minmax(6px, auto)
+          minmax(20px, 1fr); /* Minimální šířka pro operátory a rovná se */
   gap: 2px;
   align-items: center;
 }
