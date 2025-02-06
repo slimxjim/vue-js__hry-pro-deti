@@ -25,6 +25,14 @@ export class PuzzleRevealedState {
     }
   }
 
+  revealAll() {
+    for (let y = 0; y < this.maxY; y++) {
+      for (let x = 0; x < this.maxX; x++) {
+        this.revealedMapXY.set(`${x},${y}`, true);
+      }
+    }
+  }
+
   hide(x: number, y: number) {
     if (x < this.maxX && y < this.maxY) {
       const key = `${x},${y}`;
@@ -35,25 +43,20 @@ export class PuzzleRevealedState {
     }
   }
 
-
   isRevealed(x: number, y: number): boolean {
     return this.revealedMapXY.get(`${x},${y}`) ?? false;
   }
 
   printToConsole() {
-    let array: string[][] = [];
     let output = '';
     for (let y = 0; y < this.maxY; y++) {
       let row = '';
-      array[y] = [];
       for (let x = 0; x < this.maxX; x++) {
         row += this.isRevealed(x, y) ? '1 ' : '0 ';
-        array[y][x] = this.isRevealed(x, y) ? '1 ' : '0 ';
       }
       output += row.trim() + '\n';
     }
     console.log(output);
-    console.log(array);
   }
 
   getMatrix(): boolean[][] {
@@ -65,6 +68,7 @@ export class PuzzleRevealedState {
       }
     }
     console.log(array);
+    this.printToConsole();
     return array;
   }
 

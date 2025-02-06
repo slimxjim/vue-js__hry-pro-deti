@@ -16,12 +16,28 @@ export function usePuzzleImage() {
 
   }
 
-  function createPuzzle(imageUrl: string, countPieces: number, cols: number, rows: number) {
+  function createPuzzle(imageUrl: string, imgWidthPx: number, imgHeightPx: number, countPieces: number) {
+    // Vypočítání počtu sloupců a řádků
+    const cols = Math.ceil(Math.sqrt(countPieces)); // Přibližně čtvercový tvar matice
+    const rows = Math.ceil(countPieces / cols);     // Počet řádků
+
+    // Velikost políček
+    const squareWidthPx = imgWidthPx / cols;
+    const squareHeightPx = imgHeightPx / rows;
+
+    const covered = cols * rows;
+    console.log(`Počet sloupců: ${cols}, Počet řádků: ${rows} pokryto: ${covered}/${countPieces}`);
+    console.log(`Velikost políčka: ${squareWidthPx.toFixed(2)} x ${squareHeightPx.toFixed(2)} px`);
+
     puzzleImageModel.value = {
       imageUrl: imageUrl,
       countPieces: countPieces,
       revealedState: new PuzzleRevealedState(cols, rows)
     }
+
+    currX = 0;
+    currY = 0;
+
     console.log('Puzzle created: ',puzzleImageModel.value);
     puzzleImageModel.value.revealedState.printToConsole();
   }
@@ -58,6 +74,12 @@ export function usePuzzleImage() {
           currX = 0;
         }
         console.log('revealing next ' + currX + ' , ' + currY);
+        if (puzzleImageModel.value.revealedState.revealedPiecesCount >= puzzleImageModel.value.countPieces) {
+          puzzleImageModel.value.revealedState.revealAll();
+          console.log('Reached count pieces, all revealed');
+          currX = maxX;
+          currY = maxY;
+        }
       }
       else {
         console.log('fully revealed');

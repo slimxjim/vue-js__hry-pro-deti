@@ -24,7 +24,6 @@
       </div>
     </div>
   </v-card>
-  <PuzzleImageGridIlustration :puzzle-image-model="puzzleImageModel" />
 </template>
 
 <script lang="ts" setup>

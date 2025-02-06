@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <h3>Revealed Puzzle Grid</h3>
-    <table v-if="puzzleImageModel?.revealedState">
+    <table v-if="puzzleImageModel?.revealedState && puzzleImageModel.countPieces > 0">
       <tr v-for="y in rows" :key="y">
         <td v-for="x in cols" :key="x" :style="{ backgroundColor: isRevealed(x-1, y-1) ? 'green' : 'gray', width: '20px', textAlign: 'center'}">
           {{ isRevealed(x-1, y-1) ? '1' : '0' }}

@@ -4,28 +4,48 @@
     <v-btn small color="gray" @click="preparePuzzle()" @keydown.prevent>SetPuzzle</v-btn>
     <v-btn small color="gray" @click="revealNext()" @keydown.prevent>RevealNext</v-btn>
     <v-btn small color="gray" @click="hideNext()" @keydown.prevent>HideNext</v-btn>
+    <v-text-field v-model="countPieces" label="Počet políček" type="number" min="0" step="1"/>
 
     <GcPuzzle
       :puzzle-image-model=puzzleImageModel
       :param_max-height="500"
       :param_max-width="500"/>
+    <PuzzleImageGridIlustration :puzzle-image-model="puzzleImageModel" />
   </v-card>
 </template>
 
 <script setup lang="ts">
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
 import { usePuzzleImage } from '@/composable/usePuzzle'
-import { computed, type Ref, type UnwrapRef } from 'vue'
+import { computed, onMounted, ref, type Ref, type UnwrapRef } from 'vue'
 import type { PuzzleImageModel } from '@/types/puzzelTypes'
+import PuzzleImageGridIlustration from '@/components/game_components/puzzle/PuzzleImageGridIlustration.vue'
+import { preprocessCSS } from 'vite'
+import { ImageUtils } from '@/utils/ImageUtils'
 
 const usePuzzle = usePuzzleImage();
 const puzzleImageModel = usePuzzle.puzzleImageModel;
+const countPieces = ref<number>(1);
+
+onMounted(() => {
+  preparePuzzle();
+});
+
+const imageUrl = "https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg";
+let heightPx = 0;
+let widthPx = 0;
+ImageUtils.getImageDimensions(imageUrl)
+  .then(dimensions => {
+    heightPx = dimensions.height;
+    widthPx = dimensions.width;
+    console.log(`Šířka: ${dimensions.width}px, Výška: ${dimensions.height}px`);
+  })
+  .catch(error => {
+    console.log(error);
+  });
 
 function preparePuzzle() {
-  usePuzzle.createPuzzle(
-    "https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg",
-    9, 3, 3
-  );
+  usePuzzle.createPuzzle(imageUrl, widthPx, heightPx, countPieces.value);
   console.log('preparing puzzle: ', usePuzzle.puzzleImageModel);
 }
 
