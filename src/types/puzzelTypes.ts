@@ -41,14 +41,31 @@ export class PuzzleRevealedState {
   }
 
   printToConsole() {
+    let array: string[][] = [];
     let output = '';
     for (let y = 0; y < this.maxY; y++) {
       let row = '';
+      array[y] = [];
       for (let x = 0; x < this.maxX; x++) {
         row += this.isRevealed(x, y) ? '1 ' : '0 ';
+        array[y][x] = this.isRevealed(x, y) ? '1 ' : '0 ';
       }
       output += row.trim() + '\n';
     }
     console.log(output);
+    console.log(array);
   }
+
+  getMatrix(): boolean[][] {
+    const array: boolean[][] = [];
+    for (let y = 0; y < this.maxY; y++) {
+      array[y] = [];
+      for (let x = 0; x < this.maxX; x++) {
+        array[y][x] = this.isRevealed(x, y);
+      }
+    }
+    console.log(array);
+    return array;
+  }
+
 }
