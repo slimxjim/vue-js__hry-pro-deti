@@ -25,7 +25,6 @@ const { time } = useStopwatch();
 
 // useStopwatch.ts
 import {ref} from 'vue';
-import { defineStore } from 'pinia'
 import type { GcTime } from '@/types/GcTime'
 
 export function useStopwatch() {
@@ -78,6 +77,22 @@ export function useStopwatch() {
       }
     }
 
+    // Funkce pro pokračování v běhu stopek po pozastavení
+    function resume() {
+      if (pauseTime !== null) {
+        console.log('Resuming stopwatch');
+        startTime = performance.now() - (pauseTime ?? 0);  // Account for paused time
+        timer = window.setInterval(() => {
+          if (startTime !== null) {
+            const elapsedTime = performance.now() - startTime;
+            time.value.seconds = Math.floor(elapsedTime / 1000);
+            time.value.milliseconds = Math.floor(elapsedTime % 1000);
+          }
+        }, 10); // Aktualizuje každých 10 ms
+        pauseTime = null;  // Reset pauseTime after resuming
+      }
+    }
+
     // Funkce pro nový start s jiným useStopwatch objektem
     function newStart(newStartTime: number) {
       console.log('Starting new stopwatch with previous time');
@@ -92,6 +107,6 @@ export function useStopwatch() {
       }, 10); // Aktualizuje každých 10 ms
     }
 
-    return { time, start, stop, newStart };
+    return { time, start, stop, pause, resume, newStart };
 }
 

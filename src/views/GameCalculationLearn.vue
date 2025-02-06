@@ -3,7 +3,7 @@
   <v-form>
     <v-btn small @click="(event: MouseEvent) => { startGame(); (event.target as HTMLElement).blur(); }" @keydown.prevent>Start/Pause Game</v-btn>
     <v-btn small @click="stopGame" @keydown.prevent>Stop Game</v-btn>
-<!--    Reset Game-->
+    <v-btn small color="gray" @click="doResetGame" @keydown.prevent>Reset</v-btn>
     <v-btn small color="gray" @click="changeLevel" @keydown.prevent>Change level</v-btn>
     <v-btn small color="gray" @click="doAnswer" @keydown.prevent>answer</v-btn>
     <v-btn small color="gray" @click="doSkipAnswer" @keydown.prevent>nevím</v-btn>
@@ -34,7 +34,11 @@
                 <GcPlayerInfo/>
               </v-col>
               <v-col class="d-flex justify-start w-100">
-                <GcPuzzle/>
+<!--                <GcPuzzle-->
+<!--                  :puzzle-image-model="gameStore.usePuzzleImage.puzzleImageModel"-->
+<!--                  :param_max-width="250"-->
+<!--                  :param_max-height="250"-->
+<!--                />-->
               </v-col>
             </v-row>
 
@@ -59,6 +63,28 @@
               <Numpad v-model:userAnswer="userAnswer"  @start-answering="startAnswering()" @continue-answering="continueAnswering()" />
             </div>
 
+            <div style="margin-top: 20px; padding: 10px;">
+              <v-row>
+                <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-start w-100">
+                  <v-btn class="w-100" @click="doAnswer" :disabled="isPaused" color="green">Odpovědět</v-btn>
+                </v-col>
+              </v-row>
+              <v-row style="margin-top: 30px">
+                <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-center w-100">
+                  <v-btn class="w-100" @click="togglePause()" >
+                    <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
+                  </v-btn>
+                </v-col>
+
+                <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
+                <v-col class="d-flex justify-end w-100">
+                  <v-btn class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
           </div>
         </div>
       </v-col>
@@ -80,9 +106,6 @@
   </v-row>
 
   <v-container>
-    <!--      <v-card>-->
-    <!--        Level: <pre style="font-size: 9px">{{ initLevel }}</pre>-->
-    <!--      </v-card>-->
     <v-card>
       Game: <pre style="font-size: 9px">{{ game }}</pre>
     </v-card>
@@ -94,13 +117,11 @@
 import { computed, onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
-import { type Calculation, EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
+import { EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
 import AnswersList from '@/components/AnswersList.vue'
 import GcPlayerInfo from '@/components/game_components/GcPlayerInfo.vue'
-import GcPuzzle from '@/components/game_components/GcPuzzle.vue'
 import GcCalculationQuestion from '@/components/game_components/calculation/GcCalculationQuestion.vue'
 import Numpad from '@/components/Numpad.vue'
-import { useStopwatch } from '@/composable/useStopwatch'
 import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
 import type { GcTime } from '@/types/GcTime'
 import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
@@ -108,13 +129,16 @@ import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
 
+// const puzzleImageModelRef = computed<PuzzleImageModel | undefined | null>(() => gameStore.usePuzzleImage.puzzleImageModel);
+
 const stopWatch = useStopwatchGlobalStore();
-const time = computed<GcTime>(() => stopWatch.time);
 
 //MODEL:::
 const userAnswer = ref<number|undefined>();
 const timeLeft = computed<number | undefined>(() => game.value?.gameState.remainingTime);
-const message = ref('Todo Msg - odpověď byla... špatně/sprvně ..něco motivačního')
+const message = ref('Todo Msg - odpověď byla... špatně/sprvně ..něco motivačního');
+const isPaused = ref<boolean>(false);
+
 // ------------------------
 
 onMounted(async () => {
@@ -132,6 +156,21 @@ function startGame() {
   gameStore.startGame(1);
 }
 
+function togglePause() {
+  if (!isPaused.value) {
+    gameStore.pauseGame();
+  }
+  else {
+    gameStore.resumeGame();
+  }
+  isPaused.value = !isPaused.value;
+}
+
+function doResetGame() {
+  gameStore.resetGame();
+  isPaused.value = false;
+}
+
 
 function stopGame() {
   gameStore.endGame();
@@ -140,6 +179,9 @@ function stopGame() {
 function doAnswer() {
   gameStore.doAnswer(userAnswer.value, EPlayerTurn.PLAYER);
   userAnswer.value = undefined;
+  if (gameStore.getCurrentCalculation()?.correctAnswer === userAnswer.value) {
+    // TODO reveal puzzle
+  }
 }
 function doSkipAnswer() {
   gameStore.doSkipAnswer(EPlayerTurn.PLAYER);
@@ -159,6 +201,9 @@ function continueAnswering() {
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     doAnswer();
+  }
+  if (event.key === 'Pause') {
+    togglePause();
   }
 });
 

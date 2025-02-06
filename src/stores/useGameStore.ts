@@ -1,12 +1,13 @@
-import { computed, ref, unref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 import { defineStore } from 'pinia'
 import {
   type Calculation,
   type CalculationAnswer,
   type CalculationLevel,
-  EDevice, EGameProgress,
+  EDevice,
+  EGameProgress,
   EPlayerTurn,
-  type GameCalculation
+  type GameCalculation, type User
 } from '@/types/calculationTypes'
 import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
 import { useAuthStore } from '@/stores/auth'
@@ -19,7 +20,7 @@ export const useGameStore = defineStore('game', () => {
   const game = ref<GameCalculation | null>(null);
   const isGameActive = computed(() => game.value !== null);
   const authStore = useAuthStore();
-  const user = computed(() => authStore.user);
+  const user = computed<User | undefined | null>(() => authStore.user);
   const turnTimeFirst = ref<GcTime>({seconds: 0, milliseconds: 0, millisecondsTotal: 0});
   const turnTimeTotal = ref<GcTime>({seconds: 0, milliseconds: 0, millisecondsTotal: 0});
 
@@ -49,8 +50,8 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function doAnswer(answer: number|undefined, playerOnTurn: EPlayerTurn) {
-    stopTurnTimerTotal();
     if (game.value && game.value.gameState.gameProgress === EGameProgress.RUNNING) {
+      stopTurnTimerTotal();
       //TODO move to service?
       const currCalc = getCurrentCalculation();
       if (currCalc ) {
@@ -140,10 +141,47 @@ export const useGameStore = defineStore('game', () => {
     updateGameProgress();
   }
 
+  function pauseGame() {
+    if (game.value) {
+      if (game.value.gameState.gameProgress === EGameProgress.RUNNING) {
+        game.value.gameState.gameProgress = EGameProgress.PAUSED;
+        stopWatchFirst.pause();
+        stopWatchTotal.pause();
+      }
+    }
+  }
+
+  function resumeGame() {
+    if (game.value) {
+      if (game.value.gameState.gameProgress === EGameProgress.PAUSED) {
+        game.value.gameState.gameProgress = EGameProgress.RUNNING;
+        stopWatchFirst.resume();
+        stopWatchTotal.resume();
+      }
+    }
+  }
+
+  function resetGame() {
+    stopWatchFirst.stop();
+    stopWatchTotal.stop();
+
+    if (game.value) {
+      game.value.gameState.playerOnTurn = EPlayerTurn.PLAYER;
+      game.value.gameState.currentTurnIndexInGameScenario = 0;
+      game.value.player.answers = [];
+      updateGameProgress();
+    }
+
+    stopWatchFirst.start();
+    stopWatchTotal.start();
+  }
+
   function leaveGame() {
-    if (game.value){
+    if (game.value) {
       game.value.gameState.gameProgress = EGameProgress.LEAVED_NOT_FINISHED;
     }
+    stopWatchFirst.stop();
+    stopWatchTotal.stop();
     game.value = null;
   }
 
@@ -185,6 +223,9 @@ export const useGameStore = defineStore('game', () => {
     game,
     isGameActive,
     startGame,
+    pauseGame,
+    resumeGame,
+    resetGame,
     endGame,
     leaveGame,
     changeLevel,

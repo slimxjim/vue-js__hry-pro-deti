@@ -1,5 +1,11 @@
 <template>
-
+  <br>
+  <hr/>
+  <br>
+  <PuzzleViewTest/>
+  <br>
+  <hr/>
+  <br>
   <v-btn small @click="startGame">Start Game</v-btn>
   <v-btn small @click="stopGame">Stop Game</v-btn>
   <v-btn small color="gray" @click="changeLevel">Change level</v-btn>
@@ -35,6 +41,7 @@ import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
 import { EPlayerTurn } from '@/types/calculationTypes'
 import AnswersList from '@/components/AnswersList.vue'
+import PuzzleViewTest from '@/components/game_components/puzzle/PuzzleViewTest.vue'
 
 const gameStore = useGameStore();
 const game =  computed(() => gameStore.game);
