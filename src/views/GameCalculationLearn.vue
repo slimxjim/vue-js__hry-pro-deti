@@ -14,7 +14,7 @@
   </v-form>
   <div v-if="gameStore.isGameActive">
     <v-row>
-      <v-col>Game in progress...{{ game?.gameState.gameProgress }} -> {{ game?.gameState.currentTurnIndexInGameScenario }} </v-col>
+      <v-col>Game in progress...{{ game?.gameState.gameProgress }} -> {{ game?.gameState.currentTurnIndexInGameScenario }} -> Level {{ game?.level.LevelID }}</v-col>
       <v-col>Time = <TimeWatchSpan :time="gameStore.turnTimeFirst"/></v-col><v-col><TimeWatchSpan :time="gameStore.turnTimeTotal"/></v-col>
     </v-row>
   </div>
@@ -34,11 +34,10 @@
                 <GcPlayerInfo/>
               </v-col>
               <v-col class="d-flex justify-start w-100">
-<!--                <GcPuzzle-->
-<!--                  :puzzle-image-model="gameStore.usePuzzleImage.puzzleImageModel"-->
-<!--                  :param_max-width="250"-->
-<!--                  :param_max-height="250"-->
-<!--                />-->
+                <GcPuzzle
+                  :puzzle-image-model=puzzleImageModel
+                  :param_max-height="500"
+                  :param_max-width="500"/>
               </v-col>
             </v-row>
 
@@ -125,6 +124,10 @@ import Numpad from '@/components/Numpad.vue'
 import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
 import type { GcTime } from '@/types/GcTime'
 import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
+import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
+import PuzzleImageGridIlustration from '@/components/game_components/puzzle/PuzzleImageGridIlustration.vue'
+import { usePuzzleImage } from '@/composable/usePuzzle'
+import { ImageUtils } from '@/utils/ImageUtils'
 
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
@@ -139,6 +142,27 @@ const timeLeft = computed<number | undefined>(() => game.value?.gameState.remain
 const message = ref('Todo Msg - odpověď byla... špatně/sprvně ..něco motivačního');
 const isPaused = ref<boolean>(false);
 
+//puzzle:
+const usePuzzle = usePuzzleImage();
+const puzzleImageModel = usePuzzle.puzzleImageModel;
+const imageUrl = "https://kosmonautix.cz/wp-content/uploads/2022/03/1094599-1024x640.jpg";
+let heightPx = 0;
+let widthPx = 0;
+ImageUtils.getImageDimensions(imageUrl)
+  .then(dimensions => {
+    heightPx = dimensions.height;
+    widthPx = dimensions.width;
+    console.log(`Šířka: ${dimensions.width}px, Výška: ${dimensions.height}px`);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+function preparePuzzle() {
+  usePuzzle.createPuzzle(imageUrl, widthPx, heightPx, gameStore.game?.gameScenario.length ?? 0);
+  console.log('preparing puzzle: ', usePuzzle.puzzleImageModel);
+}
+
 // ------------------------
 
 onMounted(async () => {
@@ -150,10 +174,12 @@ async function changeLevel(){
   const id = prompt("Enter the LevelID to change:");
   if (!id) return;
   await gameStore.changeLevel(Number(id));
+  preparePuzzle();
 }
 
-function startGame() {
-  gameStore.startGame(1);
+async function startGame() {
+  await gameStore.startGame(gameStore.game?.level.LevelID ?? 1);//TODO level ID  hard coded
+  preparePuzzle();
 }
 
 function togglePause() {
@@ -169,6 +195,7 @@ function togglePause() {
 function doResetGame() {
   gameStore.resetGame();
   isPaused.value = false;
+  usePuzzle.reset();
 }
 
 
@@ -180,8 +207,9 @@ function doAnswer() {
   gameStore.doAnswer(userAnswer.value, EPlayerTurn.PLAYER);
   userAnswer.value = undefined;
   if (gameStore.getCurrentCalculation()?.correctAnswer === userAnswer.value) {
-    // TODO reveal puzzle
+    //TODO
   }
+  usePuzzle.revealNext();
 }
 function doSkipAnswer() {
   gameStore.doSkipAnswer(EPlayerTurn.PLAYER);

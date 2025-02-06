@@ -25,10 +25,22 @@ export class PuzzleRevealedState {
     }
   }
 
+  hideAll() {
+    for (let y = 0; y < this.maxY; y++) {
+      for (let x = 0; x < this.maxX; x++) {
+        const key = `${x},${y}`;
+        this.revealedMapXY.set(key, false);
+        this.revealedMapXY.delete(key);
+        this.revealedPiecesCount = 0;
+      }
+    }
+  }
+
   revealAll() {
     for (let y = 0; y < this.maxY; y++) {
       for (let x = 0; x < this.maxX; x++) {
         this.revealedMapXY.set(`${x},${y}`, true);
+        this.revealedPiecesCount = this.maxX * this.maxY;
       }
     }
   }

@@ -62,7 +62,7 @@ export interface CalculationAnswer {
 }
 
 export interface CalculationLevel {//TODO MinA -> aMin, aMax, bMin, bMax, resultMin, resultMax
-  levelID?: number;
+  LevelID?: number;
   Type: string;
   Name: string;
   MinA: number;

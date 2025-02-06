@@ -49,7 +49,11 @@ export function usePuzzleImage() {
   }
 
   function reset() {
-
+    if (puzzleImageModel?.value?.revealedState) {
+      puzzleImageModel.value.revealedState.hideAll();
+      currX = 0;
+      currY = 0;
+    }
   }
 
   function setRevealedState(revealedState: PuzzleRevealedState) {
@@ -121,6 +125,7 @@ export function usePuzzleImage() {
     createPuzzle,
     reveal,
     revealNext,
-    hideNext
+    hideNext,
+    reset,
   }
 }
