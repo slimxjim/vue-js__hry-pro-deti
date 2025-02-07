@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import {
   type Calculation,
   type CalculationAnswer,
-  type CalculationLevel,
+  type CalculationLevel, type DoIncorrectAnswer, type DoTurnHistory,
   EDevice,
   EGameProgress,
   EPlayerTurn,
@@ -33,6 +33,8 @@ export const useGameStore = defineStore('game', () => {
   const puzzleImageModel = ref(usePuzzle.puzzleImageModel);
 
   const dbLevels = new DbCalculationCrudService<CalculationLevel>('/levels.php'); //TODO move to service? split state with logic and DB logic?
+  const dbIncorrectAnswers = new DbCalculationCrudService<DoIncorrectAnswer>('/incorrect_answers.php'); //TODO move to service? split state with logic and DB logic?
+  const dbTurnHistory = new DbCalculationCrudService<DoTurnHistory>('/turn_history.php'); //TODO move to service? split state with logic and DB logic?
 
   async function startGame(levelId: number) {
     const level = await loadLevel(levelId); //TODO cache
@@ -54,12 +56,50 @@ export const useGameStore = defineStore('game', () => {
     doAnswer(undefined, playerOnTurn);
   }
 
-  function doAnswer(answer: number|undefined, playerOnTurn: EPlayerTurn) {
+  async function saveAnswer(user: User, level: CalculationLevel, incorrectAnswer: CalculationAnswer) {
+    // FIXME the order is critical !!!!
+    const doTurnHistory: DoTurnHistory = {
+      PlayerID: user.userID ?? 0,
+      LevelID: level.LevelID ?? 0,
+      OperandA: incorrectAnswer.calculation.operandA,
+      Operator: incorrectAnswer.calculation.operator,
+      OperandB: incorrectAnswer.calculation.operandB,
+      CorrectAnswer: incorrectAnswer.calculation.correctAnswer,
+      PlayerAnswer: incorrectAnswer.answer ?? null,
+      IsCorrect: incorrectAnswer.isCorrect,
+      AnswerTimeFirstMs: incorrectAnswer.answerTimeFirst.millisecondsTotal,
+      AnswerTimeTotalMs: incorrectAnswer.answerTimeTotal.millisecondsTotal,
+      Device: getDeviceType(),
+    }
+    console.log('Saving answer: ', doTurnHistory);
+    const isSuccess = await dbTurnHistory.insertItem(doTurnHistory);
+    console.log('Save answer isSuccess = ', isSuccess);
+  }
+
+  async function saveIncorrectAnswer(user: User, level: CalculationLevel, incorrectAnswer: CalculationAnswer) {
+    // FIXME the order is critical !!!!
+    const doIncorrectAnwser: DoIncorrectAnswer = {
+      PlayerID: user.userID,
+      OperandA: incorrectAnswer.calculation.operandA,
+      Operator: incorrectAnswer.calculation.operator,
+      OperandB: incorrectAnswer.calculation.operandB,
+      CorrectAnswer: incorrectAnswer.calculation.correctAnswer,
+      PlayerAnswer: incorrectAnswer.answer ?? null,
+      AnswerTimeMs: incorrectAnswer.answerTimeFirst.millisecondsTotal,
+      LevelID: level.LevelID ?? 0,
+      Device: getDeviceType(),
+    }
+    console.log('Saving incorrect answer: ', doIncorrectAnwser);
+    const isSuccess = await dbIncorrectAnswers.insertItem(doIncorrectAnwser);
+    console.log('Save incorrect answer isSuccess = ', isSuccess);
+  }
+
+  async function doAnswer(answer: number|undefined, playerOnTurn: EPlayerTurn) {
     if (game.value && game.value.gameState.gameProgress === EGameProgress.RUNNING) {
       stopTurnTimerTotal();
       //TODO move to service?
       const currCalc = getCurrentCalculation();
-      if (currCalc ) {
+      if (currCalc && user.value) {
         const calcAnswer: CalculationAnswer = {
           answer: answer,
           answerTimeFirst: {...turnTimeFirst.value},
@@ -69,8 +109,15 @@ export const useGameStore = defineStore('game', () => {
           device: getDeviceType(),
           isCorrect: (currCalc.correctAnswer === answer)
         }
+        if (user.value && game.value.level) {
+          await saveAnswer(user.value, game.value.level, calcAnswer)
+        }
         if (playerOnTurn === EPlayerTurn.PLAYER) {
           game.value.player.answers?.push(calcAnswer);
+          if (!calcAnswer.isCorrect && user.value && game.value.level && user.value.userID) {
+            // store it to incorrect answers
+            await saveIncorrectAnswer(user.value, game.value.level, calcAnswer);
+          }
         }
         else if (playerOnTurn === EPlayerTurn.OPPONENT && game.value.opponent) {
           game.value.opponent.answers?.push(calcAnswer);

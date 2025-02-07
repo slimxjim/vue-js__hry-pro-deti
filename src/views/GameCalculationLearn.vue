@@ -211,11 +211,11 @@ function stopGame() {
   gameStore.endGame();
 }
 
-function doAnswer() {
-  gameStore.doAnswer(userAnswer.value, EPlayerTurn.PLAYER);
+async function doAnswer() {
+  await gameStore.doAnswer(userAnswer.value, EPlayerTurn.PLAYER);
   userAnswer.value = undefined;
   if (gameStore.getCurrentCalculation()?.correctAnswer === userAnswer.value) {
-    //TODO
+    //TODO - puzzle ? reveal only for success answers?
   }
   gameStore.usePuzzle.revealNext();
 }

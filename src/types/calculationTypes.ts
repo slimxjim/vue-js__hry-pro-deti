@@ -1,13 +1,15 @@
 import type { GcTime } from '@/types/GcTime'
+import { ref } from 'vue'
 
 export interface GameCalculation {
+  gameId?: number
   gameType: EGameType;
   gameState: GameState;
   gameCreationTimestamp: string;
   level: CalculationLevel;
   gameScenario: Calculation[];
   player: Player; //owner
-  opponent?: Player; //could be other person or PC or null (learning mode)
+  opponent?: Player; //could be other person or PC or null (learning mode),
 }
 
 export interface GameState {
@@ -111,3 +113,58 @@ export interface GameHistory { //TODO předělat ale i model
   device: string
 
 }
+///// DB ONLY Usage
+
+export interface DoIncorrectAnswer {
+  PlayerID?: number,
+  OperandA: number,
+  Operator: string,
+  OperandB: number,
+  CorrectAnswer: number,
+  PlayerAnswer: number | null,
+  AnswerTimeMs: number,
+  LevelID: number,
+  Device: string
+}
+
+export interface DoTurnHistory {
+  TurnID?: number,
+  PlayerID: number,
+  LevelID: number,
+  OperandA: number,
+  Operator: string,
+  OperandB: number,
+  CorrectAnswer: number,
+  PlayerAnswer: number | null,
+  IsCorrect: boolean,
+  AnswerTimeFirstMs: number,
+  AnswerTimeTotalMs: number,
+  Device: string
+}
+
+export interface DoGameHistory {
+  GameID?: number,
+  CreationTimestamp: string,
+  PlayerID: number,
+  CurrentTurn: string | null,
+  LivesPlayer: number | null,
+  LivesOpponent: number | null,
+  TimeLimitSeconds: number | null,
+  CurrentLevelID: number,
+  LastExpression: string | null,
+  Device: string
+}
+
+export interface AnswerData {
+  ErrorID: number;
+  PlayerID: number;
+  OperandA: number;
+  Operator: string;
+  OperandB: number;
+  CorrectAnswer: number;
+  PlayerAnswer: number | null;
+  AnswerTimeMs: number;
+  LevelID: number;
+  Device: string | null;
+}
+

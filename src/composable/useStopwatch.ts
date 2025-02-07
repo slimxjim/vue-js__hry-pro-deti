@@ -45,13 +45,14 @@ export function useStopwatch() {
           console.log('Stopky už běží, nedělej nic');
           return;
         }
-        console.log('Starting stopwatch');
+        // console.log('Starting stopwatch');
         startTime = performance.now();
         timer = window.setInterval(() => {
           if (startTime !== null) {
             const elapsedTime = performance.now() - startTime;
             time.value.seconds = Math.floor(elapsedTime / 1000);
             time.value.milliseconds = Math.floor(elapsedTime % 1000);
+            time.value.millisecondsTotal = time.value.seconds * 1000 + time.value.milliseconds;
           }
         }, 10); // Aktualizuje každých 10 ms
       }
@@ -59,7 +60,7 @@ export function useStopwatch() {
       // Funkce pro zastavení stopek
       function stop(): number {
         const timeResult = timer ?? -1;
-        console.log('timeResult = ',timeResult);
+        // console.log('timeResult = ',timeResult);
         if (timer !== null) {
           clearInterval(timer);
           timer = null;
@@ -73,20 +74,21 @@ export function useStopwatch() {
         clearInterval(timer);
         timer = null;
         pauseTime = performance.now() - (startTime ?? 0);  // Save current elapsed time for resume
-        console.log('Stopwatch paused at', pauseTime);
+        // console.log('Stopwatch paused at', pauseTime);
       }
     }
 
     // Funkce pro pokračování v běhu stopek po pozastavení
     function resume() {
       if (pauseTime !== null) {
-        console.log('Resuming stopwatch');
+        // console.log('Resuming stopwatch');
         startTime = performance.now() - (pauseTime ?? 0);  // Account for paused time
         timer = window.setInterval(() => {
           if (startTime !== null) {
             const elapsedTime = performance.now() - startTime;
             time.value.seconds = Math.floor(elapsedTime / 1000);
             time.value.milliseconds = Math.floor(elapsedTime % 1000);
+            time.value.millisecondsTotal = time.value.seconds * 1000 + time.value.milliseconds;
           }
         }, 10); // Aktualizuje každých 10 ms
         pauseTime = null;  // Reset pauseTime after resuming
@@ -95,7 +97,7 @@ export function useStopwatch() {
 
     // Funkce pro nový start s jiným useStopwatch objektem
     function newStart(newStartTime: number) {
-      console.log('Starting new stopwatch with previous time');
+      // console.log('Starting new stopwatch with previous time');
       // Start the new stopwatch with the time from another stopwatch
       startTime = performance.now() - newStartTime;  // Account for paused time
       timer = window.setInterval(() => {
@@ -103,6 +105,7 @@ export function useStopwatch() {
           const elapsedTime = performance.now() - startTime;
           time.value.seconds = Math.floor(elapsedTime / 1000);
           time.value.milliseconds = Math.floor(elapsedTime % 1000);
+          time.value.millisecondsTotal = time.value.seconds * 1000 + time.value.milliseconds;
         }
       }, 10); // Aktualizuje každých 10 ms
     }

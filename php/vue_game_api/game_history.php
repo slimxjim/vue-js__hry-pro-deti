@@ -4,7 +4,19 @@ include 'db.php';
 include 'CrudController.php';
 
 // Konfigurace pro tabulku GameHistory
-$table = 'GameHistory';
+$table = 'GameHistory'; //TODO -> Game
+
+/* NEW:
+  gameId?: number
+  gameType: EGameType;
+  gameState: GameState;
+  gameCreationTimestamp: string;
+  level: CalculationLevel;
+  gameScenario: Calculation[];
+  player: Player; //owner
+  opponent?: Player; //could be other person or PC or null (learning mode),
+  */
+
 $columns = [
     'CreationTimestamp',
     'PlayerID',

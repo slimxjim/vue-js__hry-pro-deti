@@ -40,7 +40,12 @@ class CrudController {
         if (isset($_GET["id"])) {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?");
             $stmt->bind_param("i", $_GET["id"]);
-        } else {
+        }
+        else if (isset($_GET["playerId"])) {
+                    $stmt = $this->conn->prepare("SELECT * FROM {$this->table} WHERE PlayerID = ?");
+                    $stmt->bind_param("i", $_GET["playerId"]);
+                }
+        else {
             $stmt = $this->conn->prepare("SELECT * FROM {$this->table}");
         }
         $stmt->execute();

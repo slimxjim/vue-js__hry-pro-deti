@@ -53,18 +53,19 @@ CREATE TABLE GameHistory (
 
 -- Table for turn history (used for incomplete games)
 CREATE TABLE TurnHistory (
-    TurnID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique turn ID
-    GameID INT,                              -- Associated game
-    OperandA INT,                            -- Operand A
-    Operator VARCHAR(2),                     -- Operator (+, -)
-    OperandB INT,                            -- Operand B
-    CorrectAnswer INT,                       -- Correct result
-    Device --Desktop/Mobile
-    PlayerAnswer INT,                        -- Player's answer
-    IsCorrect BOOLEAN,                       -- Whether the answer was correct
-    AnswerTimeMsFirst INT,                   -- Time taken to answer (ms) until first button is pressed on the numpad
-    AnswerTimeMsTotal INT,                   -- Time taken to answer (ms) until OK is pressed
-    FOREIGN KEY (GameID) REFERENCES GameHistory(GameID)
+     TurnID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique turn ID
+     PlayerID INT,                            -- Associated game
+     LevelID INT,                             -- Level from which the calculation came
+     OperandA INT,                            -- Operand A
+     Operator VARCHAR(2),                      -- Operator (+, -)
+     OperandB INT,                            -- Operand B
+     CorrectAnswer INT,                        -- Correct result
+     Device ENUM('desktop', 'mobile') NOT NULL, -- Desktop or Mobile
+     PlayerAnswer INT,                         -- Player's answer
+     IsCorrect BOOLEAN,                         -- Whether the answer was correct
+     AnswerTimeFirstMs INT,                     -- Time taken to answer (ms) until first button is pressed on the numpad
+     AnswerTimeTotalMs INT,                     -- Time taken to answer (ms) until OK is pressed
+     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID)
 );
 
 -- Table for used calculations
@@ -103,7 +104,7 @@ CREATE TABLE IncorrectAnswers (
     PlayerAnswer INT,                         -- Player's incorrect answer
     AnswerTimeMs INT,                         -- Time taken to answer (ms)
     LevelID INT,                              -- Level from which the calculation came
-    Device --Desktop/Mobile
+    Device ENUM('desktop', 'mobile') NOT NULL, -- Desktop or Mobile
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID),
     FOREIGN KEY (LevelID) REFERENCES Levels(LevelID)
 );

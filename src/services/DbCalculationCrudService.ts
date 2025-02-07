@@ -24,4 +24,18 @@ export class DbCalculationCrudService <T> {
     }
   }
 
+  public async insertItem(data: T ): Promise<boolean> {
+    try {
+      const response = await axios.post(`${DbCalculationCrudService.apiBaseUrl}${this.apiEndpoint}`, data);
+      if (response!.status === 200){
+        return true;
+      }
+      else {
+        throw new Error('Insert failed.. server problem');
+      }
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Insert failed');
+    }
+  }
+
 }

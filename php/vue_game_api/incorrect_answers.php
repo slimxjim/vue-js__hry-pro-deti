@@ -11,7 +11,7 @@ $columns = [
     'OperandB',
     'CorrectAnswer',
     'PlayerAnswer',
-    'AnswerTimeMs',
+    'AnswerTimeMs', //TODO currently only the first time -> add total time
     'LevelID',
     'Device'
 ];

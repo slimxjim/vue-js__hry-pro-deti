@@ -5,7 +5,8 @@ include 'CrudController.php';
 
 $table = 'TurnHistory';
 $columns = [
-    'GameID',
+    'PlayerID',
+    'LevelID',
     'OperandA',
     'Operator',
     'OperandB',
