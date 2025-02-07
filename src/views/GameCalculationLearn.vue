@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
 import { EGameProgress, EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
@@ -234,14 +234,28 @@ function continueAnswering() {
   gameStore.continueAnswering();
 }
 
-window.addEventListener('keydown', (event) => {
+// Přidání event listeneru
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown);
+});
+
+// Odebrání event listeneru při unmountu
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown);
+});
+
+const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
-    doAnswer();
+    console.trace('ENTEEEEEEEEEEEEEEEEEEEEER')
+    doAnswer()
   }
   if (event.key === 'Pause') {
-    togglePause();
+    togglePause()
   }
-});
+  return {
+    doAnswer
+  }
+}
 
 const removeButtonFocus = () => {
   document.querySelectorAll('button').forEach((btn) => btn.blur());
