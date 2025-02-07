@@ -79,7 +79,7 @@
                     gameStore.game !== null
                     && game?.gameState.gameProgress === EGameProgress.RUNNING || game?.gameState.gameProgress === EGameProgress.PAUSED
                   " class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
-                  <v-btn v-else class="w-100" @click="startGame()"  color="#333333">START</v-btn>
+                  <v-btn v-else-if="gameStore.game !== null" class="w-100" @click="startGame()"  color="#333333">START</v-btn>
 
                 </v-col>
 
@@ -209,6 +209,7 @@ async function startGame() {
   await gameStore.startGame(gameStore.game?.level.LevelID ?? 1);//TODO level ID  hard coded
   preparePuzzle();
   maxCalculationsNumber.value = game.value?.gameScenario.length ?? 0;
+  resetTimerAndPause();
 }
 
 function togglePause() {
@@ -295,8 +296,13 @@ function doSkipAnswer() {
 }
 
 function startAnswering() {
-  console.log('start answering');
-  gameStore.stopTurnTimerFirst();
+  if (isPaused.value) {
+    togglePause();
+  }
+  else {
+    console.log('start answering');
+    gameStore.stopTurnTimerFirst();
+  }
 }
 
 function continueAnswering() {
@@ -322,9 +328,14 @@ const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Pause') {
     togglePause()
   }
+  const num = parseInt(event.key, 10);
+  if (isPaused.value && !isNaN(num) && num >= 0 && num <= 9) {
+    togglePause();
+  }
   return {
     doAnswer
   }
+
 }
 
 const removeButtonFocus = () => {
