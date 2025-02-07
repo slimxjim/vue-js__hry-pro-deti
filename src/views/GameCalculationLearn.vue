@@ -79,6 +79,11 @@
                   <v-btn v-else class="w-100" @click="startGame()"  color="#333333">START</v-btn>
 
                 </v-col>
+                <v-btn v-if="
+                  (gameStore.game?.gameScenario?.length ?? 0) > 0
+                  && game?.gameState.gameProgress !== null
+                  && game?.gameState.gameProgress === EGameProgress.RUNNING" class="w-100"
+                       @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn>
               </v-row>
             </div>
 
@@ -134,6 +139,7 @@ import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
 import { ImageUtils } from '@/utils/ImageUtils'
 import GameLearingTestingMenu from '@/components/game_components/GameLearingTestingMenu.vue'
 import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
+import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
 
 const isDebugMode = computed(() => localStorage.getItem("debugMode") === "true");
 
@@ -202,8 +208,17 @@ function togglePause() {
 
 function doResetGame() {
   gameStore.resetGame();
+  if(game.value && game.value.gameScenario?.length > 0) {
+    game.value.gameScenario = GameCalculationLearnService.generateScenario(game.value.level, false);
+  }
   isPaused.value = false;
   gameStore.usePuzzle.reset();
+}
+
+function shuffleScenario() {
+  if(game.value && game.value.gameScenario?.length > 0) {
+    game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario)
+  }
 }
 
 

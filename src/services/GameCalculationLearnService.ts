@@ -95,7 +95,7 @@ export class GameCalculationLearnService {
     }
   }
 
-  static shuffle(array: any) {
+  static shuffle(array: any): [] {
     // https://stackoverflow.com/a/2450976/8494889
     let currentIndex = array.length;
 
@@ -110,6 +110,7 @@ export class GameCalculationLearnService {
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
+    return array;
   }
 
   static initGameState(): GameState {
