@@ -92,7 +92,7 @@
                 <v-col><v-btn  class="w-100" @click="selectLevel()" >LEVEL ?</v-btn></v-col>
                 <v-col><v-btn  class="w-100" @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn></v-col>
                 <v-col><v-btn  class="w-100" @click="maxCalculations()" color="#FFFFAFFF">Max příkladů ?</v-btn></v-col>
-                <v-col><v-text-field density="compact" style="width: 80px" v-model="maxCalculationsNumber" label="" type="number" min="0" step="1"/></v-col>
+                <v-col><v-text-field density="compact" style="width: 80px" v-model="maxCalculationsNumber" label="" type="number" min="1" step="1"/></v-col>
               </v-row>
             </div>
 
@@ -242,9 +242,10 @@ async function maxCalculations() {
   if (!count) return null;
   if(game.value && game.value.gameScenario?.length > 0) {
     const previousScenarioLength = game.value.gameScenario?.length ?? 0;
+    const alreadyAnswered = game.value?.player?.answers?.length ?? 0;
     const backupPuzzleModel = gameStore.usePuzzle.puzzleImageModel;
     game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario).slice(0, count);
-    if (count < previousScenarioLength && backupPuzzleModel?.revealedState) {
+    if (count > alreadyAnswered && count < previousScenarioLength && backupPuzzleModel?.revealedState) {
       preparePuzzle();
       gameStore.usePuzzle.revealCount(backupPuzzleModel?.revealedState.revealedPiecesCount);
     }

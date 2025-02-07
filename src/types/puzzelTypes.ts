@@ -15,19 +15,23 @@ export class PuzzleRevealedState {
     this.maxY = rows;
   }
 
-  revealCount(count: number) {
+  revealCount(count: number):{curX: number, curY: number} {
     this.revealedPiecesCount = 0;
     for (let y = 0; y < this.maxY; y++) {
       for (let x = 0; x < this.maxX; x++) {
-        console.log(this.revealedPiecesCount);
+        // console.log(this.revealedPiecesCount);
         this.revealedMapXY.set(`${x},${y}`, true);
-        this.printToConsole();
+        // this.printToConsole();
         this.revealedPiecesCount++;
         if (this.revealedPiecesCount == count) {
-          return;
+          if (x + 1 >= this.maxX) {
+          return {curX: 0, curY: y + 1} ;
+          }
+          return {curX: x + 1, curY: y} ;
         }
       }
     }
+    return {curX: 0, curY: 0};
   }
 
   reveal(x: number, y: number) {

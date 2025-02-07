@@ -121,8 +121,13 @@ export function usePuzzleImage() {
   }
 
   function revealCount(count: number) {
-    if (puzzleImageModel.value) {
-      puzzleImageModel.value.revealedState.revealCount(count);
+    // if (puzzleImageModel.value) {
+    //   const ret: {curX: number, curY:number } = puzzleImageModel.value.revealedState.revealCount(count);
+    //   currX = ret.curX;
+    //   currY = ret.curY;
+    // }
+    for (let y = 0; y < count; y++) {
+      revealNext();
     }
   }
 
