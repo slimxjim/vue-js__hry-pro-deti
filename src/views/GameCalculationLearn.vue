@@ -69,7 +69,7 @@
                 <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-center w-100">
                   <v-btn v-if="gameStore.game !== null" class="w-100" @click="togglePause()" >
-                    <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
+                    <span style="width: 100px">{{ isPaused ? '> Pokračovat' : '|| Pauza' }}</span>
                   </v-btn>
                 </v-col>
 
@@ -79,11 +79,20 @@
                   <v-btn v-else class="w-100" @click="startGame()"  color="#333333">START</v-btn>
 
                 </v-col>
-                <v-btn v-if="
-                  (gameStore.game?.gameScenario?.length ?? 0) > 0
-                  && game?.gameState.gameProgress !== null
-                  && game?.gameState.gameProgress === EGameProgress.RUNNING" class="w-100"
-                       @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn>
+
+
+              </v-row>
+              <br>
+              <hr/>
+              <br>
+              <v-row v-if="
+                (gameStore.game?.gameScenario?.length ?? 0) > 0
+                && game?.gameState.gameProgress != null
+                ">
+                <v-col><v-btn  class="w-100" @click="selectLevel()" >LEVEL ?</v-btn></v-col>
+                <v-col><v-btn  class="w-100" @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn></v-col>
+                <v-col><v-btn  class="w-100" @click="maxCalculations()" color="#FFFFAFFF">Max příkladů ?</v-btn></v-col>
+                <v-col><v-text-field density="compact" style="width: 80px" v-model="maxCalculationsNumber" label="" type="number" min="0" step="1"/></v-col>
               </v-row>
             </div>
 
@@ -147,6 +156,7 @@ const isDebugMode = computed(() => localStorage.getItem("debugMode") === "true")
 
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
+const maxCalculationsNumber = ref<number>(10);
 
 const stopWatch = useStopwatchGlobalStore();
 
@@ -183,17 +193,19 @@ onMounted(async () => {
   // console.log('leaded level:', initLevel.value);
 });
 
-async function changeLevel(){
+async function changeLevel(): Promise<string | null>{
   console.log('changeLog');
   const id = prompt("Enter the LevelID to change:");
-  if (!id) return;
+  if (!id) return null;
   await gameStore.changeLevel(Number(id));
   preparePuzzle();
+  return id;
 }
 
 async function startGame() {
   await gameStore.startGame(gameStore.game?.level.LevelID ?? 1);//TODO level ID  hard coded
   preparePuzzle();
+  maxCalculationsNumber.value = game.value?.gameScenario.length ?? 0;
 }
 
 function togglePause() {
@@ -212,15 +224,45 @@ function doResetGame() {
     game.value.gameScenario = GameCalculationLearnService.generateScenario(game.value.level, false);
   }
   isPaused.value = false;
-  gameStore.usePuzzle.reset();
+  preparePuzzle();
 }
 
 function shuffleScenario() {
   if(game.value && game.value.gameScenario?.length > 0) {
     game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario)
   }
+  gameStore.resetGame();
+  isPaused.value = false;
+  preparePuzzle();
 }
 
+async function maxCalculations() {
+  console.log('max calculations');
+  const count = maxCalculationsNumber.value;
+  if (!count) return null;
+  if(game.value && game.value.gameScenario?.length > 0) {
+    const previousScenarioLength = game.value.gameScenario?.length ?? 0;
+    const backupPuzzleModel = gameStore.usePuzzle.puzzleImageModel;
+    game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario).slice(0, count);
+    if (count < previousScenarioLength && backupPuzzleModel?.revealedState) {
+      preparePuzzle();
+      gameStore.usePuzzle.revealCount(backupPuzzleModel?.revealedState.revealedPiecesCount);
+    }
+    else {
+      gameStore.resetGame();
+      preparePuzzle();
+    }
+    isPaused.value = false;
+  }
+}
+
+async function selectLevel() {
+  const id = await changeLevel();
+  console.log('selected level id: ', id);
+  if (id != null) {
+    doResetGame();
+  }
+}
 
 function stopGame() {
   gameStore.endGame();

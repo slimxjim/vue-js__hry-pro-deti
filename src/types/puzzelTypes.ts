@@ -15,6 +15,21 @@ export class PuzzleRevealedState {
     this.maxY = rows;
   }
 
+  revealCount(count: number) {
+    this.revealedPiecesCount = 0;
+    for (let y = 0; y < this.maxY; y++) {
+      for (let x = 0; x < this.maxX; x++) {
+        console.log(this.revealedPiecesCount);
+        this.revealedMapXY.set(`${x},${y}`, true);
+        this.printToConsole();
+        this.revealedPiecesCount++;
+        if (this.revealedPiecesCount == count) {
+          return;
+        }
+      }
+    }
+  }
+
   reveal(x: number, y: number) {
     if (x < this.maxX && y < this.maxY) {
       const key = `${x},${y}`;

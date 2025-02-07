@@ -120,10 +120,17 @@ export function usePuzzleImage() {
     }
   }
 
+  function revealCount(count: number) {
+    if (puzzleImageModel.value) {
+      puzzleImageModel.value.revealedState.revealCount(count);
+    }
+  }
+
   return {
     puzzleImageModel,
     createPuzzle,
     reveal,
+    revealCount,
     revealNext,
     hideNext,
     reset,
