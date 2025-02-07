@@ -213,19 +213,22 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
-  function resetGame() {
-    stopWatchFirst.stop();
-    stopWatchTotal.stop();
+  function resetGameTimer() {
+    stopWatchFirst.stopAndClear();
+    stopWatchTotal.stopAndClear();
 
+    stopWatchFirst.start();
+    stopWatchTotal.start();
+  }
+
+  function resetGame() {
     if (game.value) {
       game.value.gameState.playerOnTurn = EPlayerTurn.PLAYER;
       game.value.gameState.currentTurnIndexInGameScenario = 0;
       game.value.player.answers = [];
       updateGameProgress();
     }
-
-    stopWatchFirst.start();
-    stopWatchTotal.start();
+    resetGameTimer();
   }
 
   function leaveGame() {
@@ -285,6 +288,7 @@ export const useGameStore = defineStore('game', () => {
     pauseGame,
     resumeGame,
     resetGame,
+    resetGameTimer,
     endGame,
     leaveGame,
     changeLevel,

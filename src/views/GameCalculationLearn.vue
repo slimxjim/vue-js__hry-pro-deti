@@ -75,7 +75,10 @@
 
                 <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-end w-100">
-                  <v-btn v-if="gameStore.game !== null && game?.gameState.gameProgress === EGameProgress.RUNNING" class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
+                  <v-btn v-if="
+                    gameStore.game !== null
+                    && game?.gameState.gameProgress === EGameProgress.RUNNING || game?.gameState.gameProgress === EGameProgress.PAUSED
+                  " class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
                   <v-btn v-else class="w-100" @click="startGame()"  color="#333333">START</v-btn>
 
                 </v-col>
@@ -234,6 +237,7 @@ function shuffleScenario() {
   gameStore.resetGame();
   isPaused.value = false;
   preparePuzzle();
+  resetTimerAndPause();
 }
 
 async function maxCalculations() {
@@ -244,7 +248,7 @@ async function maxCalculations() {
     const previousScenarioLength = game.value.gameScenario?.length ?? 0;
     const alreadyAnswered = game.value?.player?.answers?.length ?? 0;
     const backupPuzzleModel = gameStore.usePuzzle.puzzleImageModel;
-    game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario).slice(0, count);
+    game.value.gameScenario = GameCalculationLearnService.generateScenario(game.value.level, false).slice(0, count);
     if (count > alreadyAnswered && count < previousScenarioLength && backupPuzzleModel?.revealedState) {
       preparePuzzle();
       gameStore.usePuzzle.revealCount(backupPuzzleModel?.revealedState.revealedPiecesCount);
@@ -255,6 +259,13 @@ async function maxCalculations() {
     }
     isPaused.value = false;
   }
+  resetTimerAndPause();
+}
+
+function resetTimerAndPause() {
+  gameStore.resetGameTimer();
+  gameStore.pauseGame();
+  isPaused.value = true;
 }
 
 async function selectLevel() {
@@ -263,6 +274,7 @@ async function selectLevel() {
   if (id != null) {
     doResetGame();
   }
+  resetTimerAndPause();
 }
 
 function stopGame() {

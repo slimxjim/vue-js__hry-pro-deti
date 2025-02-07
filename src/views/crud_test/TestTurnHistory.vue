@@ -227,7 +227,9 @@ function getAnswerData(): AnswerData[] {
 
   for (let i = 0; i < parsedData.length; i++) {
     const item = parsedData[i];
-
+    if (item.PlayerAnswer == null) {
+      continue;
+    }
     answerData.push({
       ErrorID: item.ErrorID,
       PlayerID: item.PlayerID,

@@ -13,7 +13,7 @@
       </thead>
       <tbody>
       <template v-for="(group, key) in groupedData" :key="key">
-        <tr @click="toggleExpand(key)" class="cursor-pointer group-row">
+        <tr @click="toggleExpand(key)" :style="[group.incorrectCount > 0 ? 'background-color: #E38585FF' : 'background-color: #B7FCA9FF']" class="cursor-pointer group-row">
           <td class="bold-text">
             {{ group.operandA }} {{ group.operator }} {{ group.operandB }} = {{ group.correctAnswer }}
           </td>

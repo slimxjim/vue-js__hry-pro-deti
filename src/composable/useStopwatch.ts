@@ -68,6 +68,13 @@ export function useStopwatch() {
         return timeResult;
       }
 
+      function stopAndClear() {
+        stop();
+        time.value.seconds = 0;
+        time.value.milliseconds = 0;
+        time.value.millisecondsTotal = 0;
+      }
+
     // Funkce pro pozastavení stopek
     function pause() {
       if (timer !== null) {
@@ -110,6 +117,6 @@ export function useStopwatch() {
       }, 10); // Aktualizuje každých 10 ms
     }
 
-    return { time, start, stop, pause, resume, newStart };
+    return { time, start, stop, stopAndClear, pause, resume, newStart };
 }
 
