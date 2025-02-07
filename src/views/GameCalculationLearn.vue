@@ -1,25 +1,21 @@
 <template>
 <div @click="removeButtonFocus">
-  <v-form>
-    <v-btn small @click="(event: MouseEvent) => { startGame(); (event.target as HTMLElement).blur(); }" @keydown.prevent>Start/Pause Game</v-btn>
-    <v-btn small @click="stopGame" @keydown.prevent>Stop Game</v-btn>
-    <v-btn small color="gray" @click="doResetGame" @keydown.prevent>Reset</v-btn>
-    <v-btn small color="gray" @click="changeLevel" @keydown.prevent>Change level</v-btn>
-    <v-btn small color="gray" @click="doAnswer" @keydown.prevent>answer</v-btn>
-    <v-btn small color="gray" @click="doSkipAnswer" @keydown.prevent>nevím</v-btn>
-    |
-    <v-btn small color="gray" @click="stopWatch.start()" @keydown.prevent>Start ms</v-btn>
-    <v-btn small color="gray" @click="stopWatch.stop()" @keydown.prevent>Stop ms</v-btn>
-    <v-btn small color="gray" @click="startAnswering" @keydown.prevent>Answering</v-btn>
-  </v-form>
-  <div v-if="gameStore.isGameActive">
-    <v-row>
-      <v-col>Game in progress...{{ game?.gameState.gameProgress }} -> {{ game?.gameState.currentTurnIndexInGameScenario }} -> Level {{ game?.level.LevelID }}</v-col>
-      <v-col>Time = <TimeWatchSpan :time="gameStore.turnTimeFirst"/></v-col><v-col><TimeWatchSpan :time="gameStore.turnTimeTotal"/></v-col>
-    </v-row>
-  </div>
-
-  <v-container title="The Game Calc - Learn">
+  <GameLearingTestingMenu
+    v-if="isDebugMode"
+    :removeButtonFocus="removeButtonFocus"
+    :startGame="startGame"
+    :stopGame="stopGame"
+    :doResetGame="doResetGame"
+    :changeLevel="changeLevel"
+    :doAnswer="doAnswer"
+    :doSkipAnswer="doSkipAnswer"
+    :startMs="stopWatch.start"
+    :stopMs="stopWatch.stop"
+    :startAnswering="startAnswering"
+    :gameStore="gameStore"
+    :stopWatch="stopWatch"
+    :game="game"
+  />
 
     <v-row no-gutters>
       <!-- Playboard container -->
@@ -52,12 +48,11 @@
               </div>
               <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
               <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px">
-                <div id="timer">Čas: {{ timeLeft }}</div>
+                <div id="timer">Čas: <TimeWatchSpan :time="gameStore.turnTimeFirst"/></div>
               </div>
             </div>
 
-            <p style="font-weight: bold; text-align: center; margin: 10px 0">{{ message }}</p>
-
+            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }}</p>
             <div class="pa-1 ma-1">
               <Numpad v-model:userAnswer="userAnswer"  @start-answering="startAnswering()" @continue-answering="continueAnswering()" />
             </div>
@@ -66,20 +61,23 @@
               <v-row>
                 <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-start w-100">
-                  <v-btn class="w-100" @click="doAnswer" :disabled="isPaused" color="green">Odpovědět</v-btn>
+                  <v-btn v-if="gameStore.game !== null" class="w-100" @click="doAnswer()" :disabled="isPaused || game?.gameState.gameProgress === EGameProgress.FINISHED" color="green">Odpovědět</v-btn>
+                  <v-btn v-else class="w-100" @click="startGame()" :disabled="isPaused" color="green">START</v-btn>
                 </v-col>
               </v-row>
               <v-row style="margin-top: 30px">
                 <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-center w-100">
-                  <v-btn class="w-100" @click="togglePause()" >
+                  <v-btn v-if="gameStore.game !== null" class="w-100" @click="togglePause()" >
                     <span style="width: 100px">{{ isPaused ? 'Pokračovat' : 'Pauza' }}</span>
                   </v-btn>
                 </v-col>
 
                 <!-- Tlačítko zarovnané vpravo, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-end w-100">
-                  <v-btn class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
+                  <v-btn v-if="gameStore.game !== null && game?.gameState.gameProgress === EGameProgress.RUNNING" class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
+                  <v-btn v-else class="w-100" @click="startGame()"  color="#333333">START</v-btn>
+
                 </v-col>
               </v-row>
             </div>
@@ -87,9 +85,18 @@
           </div>
         </div>
       </v-col>
-    </v-row>
 
-  </v-container>
+      <!-- History container -->
+      <v-col cols="4" class="history-container">
+        <div class="history">
+          <h3 style="text-align: center">Historie tahů: {{ game?.player?.answers?.length }}</h3>
+          <v-card>
+            <AnswersList :answers="game?.player?.answers || []" />
+          </v-card>
+        </div>
+        <!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
+      </v-col>
+    </v-row>
 
   <v-row>
     <v-col>
@@ -116,7 +123,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
-import { EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
+import { EGameProgress, EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
 import AnswersList from '@/components/AnswersList.vue'
 import GcPlayerInfo from '@/components/game_components/GcPlayerInfo.vue'
 import GcCalculationQuestion from '@/components/game_components/calculation/GcCalculationQuestion.vue'
@@ -125,6 +132,12 @@ import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
 import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
 import { ImageUtils } from '@/utils/ImageUtils'
+import GameLearingTestingMenu from '@/components/game_components/GameLearingTestingMenu.vue'
+import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
+
+const isDebugMode = computed(() => localStorage.getItem("debugMode") === "true");
+
+
 
 const gameStore = useGameStore();
 const game = computed<GameCalculation | null>(() => gameStore.game);
@@ -134,7 +147,7 @@ const stopWatch = useStopwatchGlobalStore();
 //MODEL:::
 const userAnswer = ref<number|undefined>();
 const timeLeft = computed<number | undefined>(() => game.value?.gameState.remainingTime);
-const message = ref('Todo Msg - odpověď byla... špatně/sprvně ..něco motivačního');
+const message = ref('Hraješ');
 const isPaused = ref<boolean>(false);
 
 //puzzle:

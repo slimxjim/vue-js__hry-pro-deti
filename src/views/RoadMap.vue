@@ -78,6 +78,9 @@
           </v-card>
           <LoginUserFlow/>
         </div>
+  <v-btn v-if="isLoggedIn && loggedUser?.username === 'admin'" small @click="toggleDebugMode">Toggle Debug Mode</v-btn>
+
+
 
       </v-navigation-drawer>
       <v-main>
@@ -93,6 +96,8 @@
   </v-card>
 
 
+
+
 </template>
 
 <script setup lang="ts">
@@ -100,6 +105,12 @@ import { computed, ref } from 'vue'
 import '@mdi/font/css/materialdesignicons.css'
 import { useAuthStore } from '@/stores/auth'
 import LoginUserFlow from '@/components/user_management/LoginUserFlow.vue'
+
+const toggleDebugMode = () => {
+  const current = localStorage.getItem("debugMode") === "true";
+  localStorage.setItem("debugMode", String(!current));
+  location.reload(); // Obnoví stránku, aby se změna projevila
+};
 
 const avatarPath = `${import.meta.env.BASE_URL}images/bird.jpeg`;
 const drawer = ref(true)

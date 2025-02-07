@@ -9,6 +9,9 @@
       <h2>
         <PlayerCard />
       </h2>
+      <EmojiStatus
+      :correct="game?.gameScenario?.length ? game?.gameScenario?.length - gameStore.getWrongAnswers().length : 0"
+      :incorrect="gameStore.getWrongAnswers().length" />
     </div>
   </v-card>
 </template>
@@ -17,6 +20,7 @@
 import PlayerCard from '@/components/game_components/player/PlayerCard.vue'
 import { useGameStore } from '@/stores/useGameStore'
 import { computed } from 'vue'
+import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
 
 const gameStore = useGameStore()
 const game = computed(() => gameStore.game)

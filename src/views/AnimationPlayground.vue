@@ -14,12 +14,15 @@
   />
   <v-btn @click="revealNextPiece">Next</v-btn>
 
+  <EmojiStatusTest/>
+
 </template>
 
 <script setup lang="ts">
 import AnimeSprite from "@/components/playground/AnimeSprite.vue";
 import { ref } from 'vue'
 import PuzzleImage from '@/components/PuzzleImage.vue'
+import EmojiStatusTest from '@/components/game_components/EmojiStatusTest.vue'
 
 const puzzleRef = ref();
 

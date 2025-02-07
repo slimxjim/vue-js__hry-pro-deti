@@ -1,4 +1,4 @@
-import { computed, type Ref, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import {
   type Calculation,
@@ -7,7 +7,8 @@ import {
   EDevice,
   EGameProgress,
   EPlayerTurn,
-  type GameCalculation, type User
+  type GameCalculation,
+  type User
 } from '@/types/calculationTypes'
 import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
 import { useAuthStore } from '@/stores/auth'
@@ -15,7 +16,6 @@ import { DbCalculationCrudService } from '@/services/DbCalculationCrudService'
 import { logger } from '@/services/Logger'
 import type { GcTime } from '@/types/GcTime'
 import { useStopwatch } from '@/composable/useStopwatch'
-import type { PuzzleImageModel } from '@/types/puzzelTypes'
 import { usePuzzleImage } from '@/composable/usePuzzle'
 
 export const useGameStore = defineStore('game', () => {
@@ -224,6 +224,13 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  function getWrongAnswers(): CalculationAnswer[] {
+    if (game.value && game.value.player && game.value.player.answers) {
+      return game.value.player.answers.filter(answer => answer.isCorrect == false);
+    }
+    return [];
+  }
+
   return {
     game,
     isGameActive,
@@ -244,5 +251,6 @@ export const useGameStore = defineStore('game', () => {
     turnTimeTotal,
     usePuzzle,
     puzzleImageModel,
+    getWrongAnswers,
   };
 });
