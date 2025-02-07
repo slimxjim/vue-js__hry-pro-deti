@@ -6,9 +6,9 @@
       'not-active-player': !isActivePlayer()
   }">
     <div class="player">
-      <h2>
+      <component :is="dynamicTag">
         <PlayerCard />
-      </h2>
+      </component>
       <EmojiStatus
       :correct="game?.gameScenario?.length ? game?.gameScenario?.length - gameStore.getWrongAnswers().length : 0"
       :incorrect="gameStore.getWrongAnswers().length" />
@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import PlayerCard from '@/components/game_components/player/PlayerCard.vue'
 import { useGameStore } from '@/stores/useGameStore'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
 
 const gameStore = useGameStore()
@@ -28,6 +28,22 @@ const game = computed(() => gameStore.game)
 function isActivePlayer(): boolean {
   return gameStore.isActivePlayer()
 }
+
+const isMobile = ref(window.innerWidth < 768);
+
+const updateScreenSize = () => {
+  isMobile.value = window.innerWidth < 768;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreenSize);
+});
+
+const dynamicTag = computed(() => (isMobile.value ? "h5" : "h2"));
 
 </script>
 

@@ -3,8 +3,8 @@
     <p>Odpovědi:</p>
     <hr/>
     <div v-for="(answer, index) in answers" :key="index" class="calculation-item">
-      <div class="calculation-content">
-        <div class="calculation-part">{{ index }} | </div>
+      <div :class="[isTimeVisibleFirstR ? 'calculation-content' : 'calculation-content-no-time']">
+        <div class="calculation-id">{{ index }} | </div>
         <div class="calculation-part">{{ answer.calculation.operandA }}</div>
         <div class="calculation-part operator">{{ answer.calculation.operator }}</div>
         <div class="calculation-part">{{ answer.calculation.operandB }}</div>
@@ -18,8 +18,14 @@
             <span class="not-correct-answer strike-diagonal-price">&nbsp;{{ answer.answer ?? '?' }}&nbsp;</span>
           </div>
         </div>
-        <div class="calculation-part-time">
-          <TimeWatchSpan :time="answer.answerTimeFirst"/> / <TimeWatchSpan :time="answer.answerTimeTotal"/>
+        <div v-if="isTimeVisibleFirstR" class="calculation-part-time1">
+          <TimeWatchSpan :time="answer.answerTimeFirst"/>
+        </div>
+        <div v-if="isTimeVisibleFirstR || isTimeVisibleTotalR" class="calculation-part-sep">
+          /
+        </div>
+        <div v-if="isTimeVisibleTotalR" class="calculation-part-time2">
+          <TimeWatchSpan :time="answer.answerTimeTotal"/>
         </div>
       </div>
     </div>
@@ -27,14 +33,19 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps, onMounted, onUnmounted, ref } from 'vue'
 import { type CalculationAnswer } from '@/types/calculationTypes'
 import { logger } from '@/services/Logger'
 import TimeWatchSpan from '@/components/TimeWatchSpan.vue'
 
 const props = defineProps<{
   answers: CalculationAnswer[];
+  isTimeVisibleFirst?: boolean;
+  isTimeVisibleTotal?: boolean
 }>();
+
+const isTimeVisibleFirstR = ref<boolean>(props.isTimeVisibleFirst)
+const isTimeVisibleTotalR = ref<boolean>(props.isTimeVisibleTotal)
 
 function absolute(answer: number | undefined): number | undefined {
   // logger.debug('absolut answer = ', '', answer);
@@ -43,6 +54,28 @@ function absolute(answer: number | undefined): number | undefined {
   }
   return answer ? Math.abs(answer) : undefined;
 }
+
+
+const isMobile = ref(window.innerWidth < 768);
+
+const updateScreenSize = () => {
+  isMobile.value = window.innerWidth < 768;
+  if (!isMobile.value) {
+    isTimeVisibleTotalR.value = true;
+    isTimeVisibleFirstR.value = true;
+  }
+};
+
+onMounted(() => {
+  updateScreenSize();
+  window.addEventListener("resize", updateScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreenSize);
+});
+
+const dynamicTag = computed(() => (isMobile.value ? "h5" : "h2"));
 
 </script>
 
@@ -62,17 +95,42 @@ function absolute(answer: number | undefined): number | undefined {
 .calculation-content {
   display: grid;
   grid-template-columns:
-    minmax(30px, 1em) /* index */
-    minmax(10px, 1em) /* A */
-    minmax(5px, 1em)   /* +- */
-    minmax(10px, 1em) /* B */
-    minmax(5px, 1em)  /* = */
-    minmax(3px, 1em)  /* - */
-    minmax(20px, 5em) /* answer */
-    minmax(15px, 15em) /* times */
+    minmax(20px, 20px) /* index */
+    minmax(20px, 15px) /* A */
+    minmax(5px, 5px)   /* +- */
+    minmax(20px, 15px) /* B */
+    minmax(5px, 5px)  /* = */
+    minmax(5px, 3px)  /* - */
+    minmax(40px,60px) /* answer */
+    minmax(40px, 50px) /* times1 */
+    minmax(3px, 5px) /* sep */
+    minmax(40px, 50px) /* times2 */
     ;
   gap: 2px;
   align-items: center;
+}
+
+.calculation-content-no-time {
+    display: grid;
+    grid-template-columns:
+    minmax(10px, 20px) /* index */
+    minmax(10px, 15px) /* A */
+    minmax(5px, 5px)   /* +- */
+    minmax(10px, 15px) /* B */
+    minmax(5px, 5px)  /* = */
+    minmax(3px, 3px)  /* - */
+    minmax(35px,40px) /* answer */
+;
+    gap: 2px;
+    align-items: center;
+}
+
+.calculation-id {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.5;
 }
 
 .calculation-part {
@@ -82,7 +140,21 @@ function absolute(answer: number | undefined): number | undefined {
   text-overflow: ellipsis;
 }
 
-.calculation-part-time {
+.calculation-part-time1 {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calculation-part-sep {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calculation-part-time2 {
   text-align: left;
   white-space: nowrap;
   overflow: hidden;

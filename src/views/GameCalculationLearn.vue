@@ -21,7 +21,7 @@
       <!-- Playboard container -->
       <v-col cols="8" class="playboard-container">
         <div class="playboard" >
-          <h2 style="text-align: center; font-weight: bold">Procvičování počítání</h2>
+          <h3 style="text-align: center; font-weight: bold">Procvičování počítání</h3>
 
           <div style="margin-top: 10px">
             <v-row no-gutters>
@@ -89,9 +89,9 @@
       <!-- History container -->
       <v-col cols="4" class="history-container">
         <div class="history">
-          <h3 style="text-align: center">Historie tahů: {{ game?.player?.answers?.length }}</h3>
+          <h4 style="text-align: center">Historie tahů: {{ game?.player?.answers?.length }}</h4>
           <v-card>
-            <AnswersList :answers="game?.player?.answers || []" />
+            <AnswersList :answers="game?.player?.answers || []"/>
           </v-card>
         </div>
         <!--        <AnimeSprite :show-source-link="false" :transform-scale="0.5" :transform-origin="`bottom center`"/>-->
@@ -106,7 +106,7 @@
     </v-col>
     <v-col>
       <v-card style="width: fit-content;">
-        <AnswersList :answers="game?.player?.answers || []" />
+        <AnswersList :answers="game?.player?.answers || []" :is-time-visible-first="true" :is-time-visible-total="true" />
       </v-card>
     </v-col>
   </v-row>
