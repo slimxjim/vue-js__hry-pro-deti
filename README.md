@@ -11,10 +11,17 @@ Work: d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\
 # How to RUN:
 ### Locally
 ```
-npm run dev -- --port 8000
+npm run dev -- --port 4001
+npm install 
+npm update
+npm run build
 ```
-HP NTB: `F:/_D/PROJECTS/PROGRAMMING/WEB_APP/VueJS/hry-pro-deti-vuejs`
+### HP NTB: `F:/_D/PROJECTS/PROGRAMMING/WEB_APP/VueJS/hry-pro-deti-vuejs`
 
+
+### ES:
+- `c:\Users\jmusilek\xampp\htdocs\vue_game_api\`
+- `d:\PROJECTS\cz.honzamusilek\WEB_APP\VueJS\vue-js__hry-pro-deti\dist\`
 ---
 
 # TODO:

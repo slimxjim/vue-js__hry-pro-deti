@@ -24,6 +24,7 @@
     "class-transformer": "^0.5.1",
     "dotenv": "^16.4.7",
     "firebase": "^11.0.1",
+    "js-cookie": "^3.0.5",
     "mysql2": "^3.12.0",
     "pinia": "^2.3.1",
     "vue": "^3.4.29",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
+    "@types/js-cookie": "^3.0.6",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^20.14.5",
     "@vitejs/plugin-vue": "^5.0.5",
