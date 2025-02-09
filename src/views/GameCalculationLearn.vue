@@ -1,4 +1,7 @@
 <template>
+
+<LevelDialog ref="dialogRef" />
+
 <div @click="removeButtonFocus">
   <GameLearingTestingMenu
     v-if="isDebugMode"
@@ -26,14 +29,14 @@
           <div style="margin-top: 10px">
             <v-row no-gutters>
               <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
-              <v-col class="d-flex justify-start w-100">
+              <v-col class="d-flex justify-start" style="flex-grow: 1">
                 <GcPlayerInfo/>
               </v-col>
-              <v-col class="d-flex justify-start w-100">
+              <v-col class="d-flex justify-start" style="flex-grow: 1">
                 <GcPuzzle
                   :puzzle-image-model=gameStore.usePuzzle.puzzleImageModel
-                  :param_max-height="500"
-                  :param_max-width="500"/>
+                  :param_max-height="400"
+                  :param_max-width="400"/>
               </v-col>
             </v-row>
 
@@ -52,7 +55,7 @@
               </div>
             </div>
 
-            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }}</p>
+            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }} Level: {{ level ? level.Name : "ID=" + game?.level.LevelID }}</p>
             <div class="pa-1 ma-1">
               <Numpad v-model:userAnswer="userAnswer"  @start-answering="startAnswering()" @continue-answering="continueAnswering()" />
             </div>
@@ -80,10 +83,7 @@
                     && game?.gameState.gameProgress === EGameProgress.RUNNING || game?.gameState.gameProgress === EGameProgress.PAUSED
                   " class="w-100" @click="doResetGame" color="#333333">Reset</v-btn>
                   <v-btn v-else-if="gameStore.game !== null" class="w-100" @click="startGame()"  color="#333333">START</v-btn>
-
                 </v-col>
-
-
               </v-row>
               <br>
               <hr/>
@@ -92,7 +92,7 @@
                 (gameStore.game?.gameScenario?.length ?? 0) > 0
                 && game?.gameState.gameProgress != null
                 ">
-                <v-col><v-btn  class="w-100" @click="selectLevel()" >LEVEL ?</v-btn></v-col>
+                <v-col><v-btn  class="w-100" @click="openLevelDialog()" >LEVEL ?</v-btn></v-col>
                 <v-col><v-btn  class="w-100" @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn></v-col>
                 <v-col><v-btn  class="w-100" @click="maxCalculations()" color="#FFFFAFFF">Max příkladů ?</v-btn></v-col>
                 <v-col><v-text-field density="compact" style="width: 80px" v-model="maxCalculationsNumber" label="" type="number" min="1" step="1"/></v-col>
@@ -128,7 +128,7 @@
     </v-col>
   </v-row>
 
-  <v-container>
+  <v-container v-if="isLoggedIn && loggedUser?.username === 'admin'">
     <v-card>
       Game: <pre style="font-size: 9px">{{ game }}</pre>
     </v-card>
@@ -137,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
 import CalculationList from '@/components/CalculationList.vue'
 import { EGameProgress, EPlayerTurn, type GameCalculation } from '@/types/calculationTypes'
@@ -152,9 +152,17 @@ import { ImageUtils } from '@/utils/ImageUtils'
 import GameLearingTestingMenu from '@/components/game_components/GameLearingTestingMenu.vue'
 import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
 import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
+import LevelDialogTest from '@/components/game_components/LevelDialogTest.vue'
+import LevelDialog from '@/components/game_components/LevelDialog.vue'
+import { useLevelStore } from '@/stores/useLevelStore'
+import { useAuthStore } from '@/stores/auth'
 
 const isDebugMode = computed(() => localStorage.getItem("debugMode") === "true");
 
+// AUTH:
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn); // Dynamický stav
+const loggedUser = computed(() => authStore.user); // Dynamický stav
 
 
 const gameStore = useGameStore();
@@ -190,6 +198,10 @@ function preparePuzzle() {
   console.log('preparing puzzle: ', gameStore.usePuzzle.puzzleImageModel);
 }
 
+// Level Dialog:
+const dialogRef = ref<InstanceType<typeof LevelDialog> | null>(null);
+const store = useLevelStore();
+const level = computed(() => store.level);
 // ------------------------
 
 onMounted(async () => {
@@ -276,6 +288,26 @@ async function selectLevel() {
     doResetGame();
   }
   resetTimerAndPause();
+}
+
+watch(level, (newLevel) => {
+  if (game.value && newLevel) {
+    game.value.level = newLevel
+    doResetGame();
+    resetTimerAndPause();
+  }
+  else if (!newLevel) {
+    selectLevel();
+    if (dialogRef.value) {
+      dialogRef.value.isOpen = false; // ✅ Otevře dialog
+    }
+  }
+});
+
+function openLevelDialog() {
+  if (dialogRef.value) {
+    dialogRef.value.isOpen = true; // ✅ Otevře dialog
+  }
 }
 
 function stopGame() {

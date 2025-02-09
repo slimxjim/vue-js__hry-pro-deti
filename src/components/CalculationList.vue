@@ -9,7 +9,7 @@
         <div class="calculation-part operator">{{ calculation.operator }}</div>
         <div class="calculation-part">{{ calculation.operandB }}</div>
         <div class="calculation-part equal-sign">=</div>
-        <div class="calculation-part result">{{ calculation.correctAnswer }}</div>
+        <div class="calculation-part result">?</div>
       </div>
     </div>
   </div>

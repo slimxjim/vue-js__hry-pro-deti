@@ -1,4 +1,5 @@
 <template>
+  <LevelDialogTest/>
   <br>
   <hr/>
   <br>
@@ -42,6 +43,7 @@ import CalculationList from '@/components/CalculationList.vue'
 import { EPlayerTurn } from '@/types/calculationTypes'
 import AnswersList from '@/components/AnswersList.vue'
 import PuzzleViewTest from '@/components/game_components/puzzle/PuzzleViewTest.vue'
+import LevelDialogTest from '@/components/game_components/LevelDialogTest.vue'
 
 const gameStore = useGameStore();
 const game =  computed(() => gameStore.game);

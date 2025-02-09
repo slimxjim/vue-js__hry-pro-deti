@@ -1,14 +1,14 @@
 <template>
-  <v-dialog v-model="isOpen" max-width="350px" >
+  <v-dialog v-model="isOpen" max-width="380px" >
     <v-card>
-      <v-card-title>Zadej level:</v-card-title>
+      <v-card-title>Zadej level: </v-card-title>
       <v-text-field class="input-field" v-model="levelInput" label="Level. např.: <0,9>+-<0,9>=<0,10>" @input="onInput" />
       <v-card-actions class="action-container">
         <v-checkbox v-model="operatorPlus" label="+" class="checkbox-item" @change="updateOperatorsPlus" />
         <v-checkbox v-model="operatorMinus" label="-" class="checkbox-item" @change="updateOperatorsMinus" />
-        <v-icon v-if="isValid" color="green">mdi-check-circle</v-icon>
-        <v-btn @click="saveLevel" :disabled="!isValid">Set</v-btn>
+        <v-btn @click="saveLevel" :disabled="!isValid">Set <v-icon v-if="isValid" color="green">mdi-check-circle</v-icon></v-btn>
         <v-btn @click="close">Cancel</v-btn>
+        <v-btn @click="clearLevel" color="red">Delete</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -39,21 +39,6 @@ watch(levelInput, (newValue) => {
   operatorPlus.value = newValue.includes('+');
   operatorMinus.value = newValue.includes('-');
 });
-
-function updateOperatorsBoth() {
-  // Pokud nejsou vybrány žádné operátory, nahradíme všechny + a - znakem ?
-  if (!operatorPlus.value && !operatorMinus.value) {
-    levelInput.value = levelInput.value.replace(/>[+-]+</, '>?<');
-  }
-  // Pokud jsou vybrány oba operátory, nahradíme všechny + a - kombinací +- (jediný výskyt)
-  else if (operatorPlus.value && operatorMinus.value) {
-    levelInput.value = levelInput.value.replace(/[-+]/g, '+-');
-  }
-  // Pokud žádná podmínka není splněna, použijeme ?
-  else {
-    levelInput.value = levelInput.value.replace(/>[+-]+</, '>?<');
-  }
-}
 
 function updateOperatorsPlus() {
   if (operatorPlus.value && operatorMinus.value) {
@@ -101,7 +86,7 @@ function onInput() {
 function saveLevel() {
   if (!isValid.value || !operator.value) return;
 
-  const match = levelInput.value.match(/<\d+,\d+>[+-]+<\d+,\d+>=<\d+,\d+>/);
+  const match = levelInput.value.match(/<(\d+)+,(\d+)+>[+-]+<(\d+)+,(\d+)+>=<(\d+)+,(\d+)+>/);
   if (!match) return;
 
   const level: CalculationLevel = {
@@ -120,6 +105,11 @@ function saveLevel() {
   store.setLevel(level);
   Cookies.set('calculationLevel', JSON.stringify(level), { expires: 30 });
   close();
+}
+
+function clearLevel() {
+  store.setLevel(null);
+  Cookies.remove('calculationLevel');
 }
 
 function close() {
