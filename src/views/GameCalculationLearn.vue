@@ -24,7 +24,8 @@
       <!-- Playboard container -->
       <v-col cols="8" class="playboard-container">
         <div class="playboard" >
-          <h3 style="text-align: center; font-weight: bold">Procvičování počítání</h3>
+          <h4 style="text-align: center; font-weight: bold">Procvičování počítání</h4>
+          <p style="font-size: small; text-align: center">{{ levelMessage }}</p>
 
           <div style="margin-top: 10px">
             <v-row no-gutters>
@@ -42,20 +43,20 @@
 
             <div style="display: flex; flex-grow: 1">
               <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
-              <div style="display: flex; flex-grow: 1">
-                <GcCalculationQuestion
-                  :current-question="gameStore.getCurrentCalculation()"
-                  :current-turn-index-in-game-scenario="game?.gameState.currentTurnIndexInGameScenario"
-                  :user-answer="userAnswer"
-                />
+              <div style="display: flex; flex-grow: 1; font-size: small">
+                <div style="font-weight: bold; text-align: left; margin: 10px 0 0 0">{{ message }}</div>
               </div>
               <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
-              <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px">
-                <div id="timer">Čas: <TimeWatchSpan :time="gameStore.turnTimeFirst"/></div>
+              <div style="text-align: right; display: flex; flex-grow: 0; margin: 0 5px; ">
+                <div id="timer"><h6>Čas: <TimeWatchSpan :time="gameStore.turnTimeFirst"/></h6></div>
               </div>
             </div>
 
-            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }}</p>
+            <p id="question" style="font-weight: bold; text-align: left; margin: 8px 0 8px 10%"><GcCalculationQuestion
+              :current-question="gameStore.getCurrentCalculation()"
+              :current-turn-index-in-game-scenario="game?.gameState.currentTurnIndexInGameScenario"
+              :user-answer="userAnswer"
+            /></p>
             <div class="pa-1 ma-1">
               <Numpad v-model:userAnswer="userAnswer"  @start-answering="startAnswering()" @continue-answering="continueAnswering()" />
             </div>
@@ -64,10 +65,10 @@
               <v-row v-if="gameStore.game !== null" >
                 <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-start w-100">
-                  <v-btn class="w-100 answer-button" @click="doSkipAnswer()" :disabled="!isSkipAnswerAllowed()" color="#FFD099FF">Nevím ?</v-btn>
+                  <v-btn class="w-100 answer-button" @click="doAnswer()" :disabled="!isAnswerAllowed()" color="green">Odpovědět</v-btn>
                 </v-col>
                 <v-col class="d-flex justify-start w-100">
-                  <v-btn class="w-100 answer-button" @click="doAnswer()" :disabled="!isAnswerAllowed()" color="green">Odpovědět</v-btn>
+                  <v-btn class="w-100 answer-button" @click="doSkipAnswer()" :disabled="!isSkipAnswerAllowed()" color="#FFD099FF">Nevím ?</v-btn>
                 </v-col>
               </v-row>
               <v-row v-else >
@@ -178,6 +179,7 @@ const stopWatch = useStopwatchGlobalStore();
 const userAnswer = ref<number|undefined>();
 const timeLeft = computed<number | undefined>(() => game.value?.gameState.remainingTime);
 const message = computed<string>(() => getMessage());
+const levelMessage = computed<string>(() => getLevelMessage());
 const isPaused = ref<boolean>(false);
 
 //puzzle:
@@ -204,19 +206,20 @@ function getMessage(): string {
   const gameProgess = game?.value.gameState.gameProgress;
   if (gameProgess === EGameProgress.RUNNING) {
     msgGameState = 'Hraješ';
-  }
-  else if (gameProgess === EGameProgress.PAUSED) {
+  } else if (gameProgess === EGameProgress.PAUSED) {
     msgGameState = 'Pauza... '
-  }
-  else if (gameProgess === EGameProgress.FINISHED)
+  } else if (gameProgess === EGameProgress.FINISHED) {
     msgGameState = 'KONEC';
-
+  }
+  return msgGameState;
+}
+function getLevelMessage(): string {
   let msgLevel = '';
   if (level.value) {
     msgLevel = 'Level: ' + (level.value ? level.value.Name : 'ID=' + game?.value?.level.LevelID);
   }
 
-  return msgGameState + ' ' + msgLevel;
+  return msgLevel;
 }
 
 function preparePuzzle() {
@@ -431,10 +434,11 @@ const removeButtonFocus = () => {
 }
 #timer {
   color: red;
-  margin: 20px 0;
   text-align: right;
   font-size: 20px;
+    margin-top: 10px;
 }
+
 /* Playboard má vyplňovat celý levý prostor */
 .playboard-container {
   display: flex;

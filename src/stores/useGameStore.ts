@@ -112,7 +112,7 @@ export const useGameStore = defineStore('game', () => {
           device: getDeviceType(),
           isCorrect: (currCalc.correctAnswer === answer)
         }
-        
+
         if (user.value && game.value.level) {
           await saveAnswer(user.value, game.value.level, calcAnswer)
         }

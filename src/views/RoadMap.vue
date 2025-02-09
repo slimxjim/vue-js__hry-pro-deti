@@ -4,7 +4,6 @@
       <v-navigation-drawer
           v-model="drawer"
           :rail="rail"
-          @click.stop="rail = !rail"
           permanent
       >
         <v-list-item

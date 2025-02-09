@@ -1,5 +1,5 @@
 <template>
-  <span id="question"><span class="questionId">{{ currentTurnIndexInGameScenario }} | </span>
+  <span class="question"><span class="questionId">{{ currentTurnIndexInGameScenario }} | </span>
     {{ currentQuestion?.operandA }}
     {{ currentQuestion?.operator }}
     {{ currentQuestion?.operandB }}
@@ -22,5 +22,10 @@ const props = defineProps<{
 <style scoped>
 .questionId {
     opacity: 0.3;
+}
+.question {
+  font-size: large;
+    font-weight: bold;
+    text-align: left;
 }
 </style>
