@@ -55,18 +55,23 @@
               </div>
             </div>
 
-            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }} Level: {{ level ? level.Name : "ID=" + game?.level.LevelID }}</p>
+            <p style="font-weight: bold; text-align: center; margin: 8px 0">{{ message }}</p>
             <div class="pa-1 ma-1">
               <Numpad v-model:userAnswer="userAnswer"  @start-answering="startAnswering()" @continue-answering="continueAnswering()" />
             </div>
 
             <div style="margin-top: 20px; padding: 10px;">
-              <v-row>
+              <v-row v-if="gameStore.game !== null" >
                 <!-- Tlačítko zarovnané vlevo, zabírá 100% šířky svého sloupce -->
                 <v-col class="d-flex justify-start w-100">
-                  <v-btn v-if="gameStore.game !== null" class="w-100" @click="doAnswer()" :disabled="isPaused || game?.gameState.gameProgress === EGameProgress.FINISHED" color="green">Odpovědět</v-btn>
-                  <v-btn v-else class="w-100" @click="startGame()" :disabled="isPaused" color="green">START</v-btn>
+                  <v-btn class="w-100 answer-button" @click="doSkipAnswer()" :disabled="!isSkipAnswerAllowed()" color="#FFD099FF">Nevím ?</v-btn>
                 </v-col>
+                <v-col class="d-flex justify-start w-100">
+                  <v-btn class="w-100 answer-button" @click="doAnswer()" :disabled="!isAnswerAllowed()" color="green">Odpovědět</v-btn>
+                </v-col>
+              </v-row>
+              <v-row v-else >
+                <v-col><v-btn class="w-100" @click="startGame()" :disabled="isPaused" color="green">START</v-btn></v-col>
               </v-row>
               <v-row style="margin-top: 30px">
                 <!-- Tlačítko zarovnané uprostřed, zabírá 100% šířky svého sloupce -->
@@ -150,9 +155,7 @@ import { useStopwatchGlobalStore } from '@/stores/useStopwatchGlobalStore'
 import GcPuzzle from '@/components/game_components/puzzle/GcPuzzle.vue'
 import { ImageUtils } from '@/utils/ImageUtils'
 import GameLearingTestingMenu from '@/components/game_components/GameLearingTestingMenu.vue'
-import EmojiStatus from '@/components/game_components/EmojiStatus.vue'
 import { GameCalculationLearnService } from '@/services/GameCalculationLearnService'
-import LevelDialogTest from '@/components/game_components/LevelDialogTest.vue'
 import LevelDialog from '@/components/game_components/LevelDialog.vue'
 import { useLevelStore } from '@/stores/useLevelStore'
 import { useAuthStore } from '@/stores/auth'
@@ -174,7 +177,7 @@ const stopWatch = useStopwatchGlobalStore();
 //MODEL:::
 const userAnswer = ref<number|undefined>();
 const timeLeft = computed<number | undefined>(() => game.value?.gameState.remainingTime);
-const message = ref('Hraješ');
+const message = computed<string>(() => getMessage());
 const isPaused = ref<boolean>(false);
 
 //puzzle:
@@ -192,6 +195,29 @@ ImageUtils.getImageDimensions(imageUrl)
   .catch(error => {
     console.log(error);
   });
+
+function getMessage(): string {
+  if (!game.value) {
+    return 'Stiskni Start a začni hrát'
+  }
+  let msgGameState = '';
+  const gameProgess = game?.value.gameState.gameProgress;
+  if (gameProgess === EGameProgress.RUNNING) {
+    msgGameState = 'Hraješ';
+  }
+  else if (gameProgess === EGameProgress.PAUSED) {
+    msgGameState = 'Pauza... '
+  }
+  else if (gameProgess === EGameProgress.FINISHED)
+    msgGameState = 'KONEC';
+
+  let msgLevel = '';
+  if (level.value) {
+    msgLevel = 'Level: ' + (level.value ? level.value.Name : 'ID=' + game?.value?.level.LevelID);
+  }
+
+  return msgGameState + ' ' + msgLevel;
+}
 
 function preparePuzzle() {
   gameStore.usePuzzle.createPuzzle(imageUrl, widthPx, heightPx, gameStore.game?.gameScenario.length ?? 0);
@@ -314,6 +340,27 @@ function stopGame() {
   gameStore.endGame();
 }
 
+function isAnswerAllowed(): boolean {
+  if (!game?.value) {
+    return false;
+  }
+  const gameIsPaused = isPaused.value;
+  const gameFinished = game?.value.gameState.gameProgress === EGameProgress.FINISHED;
+  const answerFilled = userAnswer.value !== undefined;
+
+  return !gameIsPaused && !gameFinished && answerFilled;
+}
+
+function isSkipAnswerAllowed(): boolean {
+  if (!game?.value) {
+    return false;
+  }
+  const gameIsPaused = isPaused.value;
+  const gameFinished = game?.value.gameState.gameProgress === EGameProgress.FINISHED;
+
+  return !gameIsPaused && !gameFinished;
+}
+
 async function doAnswer() {
   await gameStore.doAnswer(userAnswer.value, EPlayerTurn.PLAYER);
   userAnswer.value = undefined;
@@ -325,6 +372,7 @@ async function doAnswer() {
 function doSkipAnswer() {
   gameStore.doSkipAnswer(EPlayerTurn.PLAYER);
   userAnswer.value = undefined;
+  gameStore.usePuzzle.revealNext();
 }
 
 function startAnswering() {
@@ -398,6 +446,10 @@ const removeButtonFocus = () => {
   background-color: #f5f5f5; /* Pozadí herní desky */
   padding: 5px;
   height: 100%; /* Zajistí vyplnění výšky rodičovského kontejneru */
+}
+
+.answer-button {
+    height: 70px;
 }
 
 </style>

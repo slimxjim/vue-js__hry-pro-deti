@@ -1,5 +1,6 @@
 import { type PuzzleImageModel, PuzzleRevealedState } from '@/types/puzzelTypes'
 import { type Ref, ref } from 'vue'
+import { logger } from '@/services/Logger'
 
 export function usePuzzleImage() {
 
@@ -26,8 +27,8 @@ export function usePuzzleImage() {
     const squareHeightPx = imgHeightPx / rows;
 
     const covered = cols * rows;
-    console.log(`Počet sloupců: ${cols}, Počet řádků: ${rows} pokryto: ${covered}/${countPieces}`);
-    console.log(`Velikost políčka: ${squareWidthPx.toFixed(2)} x ${squareHeightPx.toFixed(2)} px`);
+    logger.trace(`Počet sloupců: ${cols}, Počet řádků: ${rows} pokryto: ${covered}/${countPieces}`);
+    logger.trace(`Velikost políčka: ${squareWidthPx.toFixed(2)} x ${squareHeightPx.toFixed(2)} px`);
 
     puzzleImageModel.value = {
       imageUrl: imageUrl,
@@ -38,7 +39,7 @@ export function usePuzzleImage() {
     currX = 0;
     currY = 0;
 
-    console.log('Puzzle created: ',puzzleImageModel.value);
+    logger.trace('Puzzle created: ', '', puzzleImageModel.value);
     puzzleImageModel.value.revealedState.printToConsole();
   }
 
@@ -80,13 +81,13 @@ export function usePuzzleImage() {
         console.log('revealing next ' + currX + ' , ' + currY);
         if (puzzleImageModel.value.revealedState.revealedPiecesCount >= puzzleImageModel.value.countPieces) {
           puzzleImageModel.value.revealedState.revealAll();
-          console.log('Reached count pieces, all revealed');
+          logger.trace('Reached count pieces, all revealed');
           currX = maxX;
           currY = maxY;
         }
       }
       else {
-        console.log('fully revealed');
+        logger.trace('fully revealed');
       }
     }
   }
@@ -95,7 +96,7 @@ export function usePuzzleImage() {
     if (puzzleImageModel?.value?.revealedState) {
       const maxX = (puzzleImageModel.value.revealedState.maxX  ?? 0);
       const maxY = (puzzleImageModel.value.revealedState.maxY ?? 0);
-      console.log(currX,maxX,currY,maxY, (currX > 0 || currY > 0));
+      logger.trace('Hide next: ', '', currX,maxX,currY,maxY, (currX > 0 || currY > 0));
       if (currX > 0 || currY > 0) {
         if (currX > 0) {
           currX--;
@@ -105,10 +106,10 @@ export function usePuzzleImage() {
           currX = maxX - 1;
         }
         puzzleImageModel?.value?.revealedState.hide(currX, currY);
-        console.log('hiding next ' + currX + ' , ' + currY);
+        logger.trace('hiding next ' + currX + ' , ' + currY);
       }
       else {
-        console.log('fully hid');
+        logger.trace('fully hid');
       }
     }
   }

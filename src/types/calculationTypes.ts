@@ -99,6 +99,16 @@ export enum ESign {
   PLUS = "+",
   MINUS = "-",
 }
+export class ESignHelper {
+  static valueOf(value: string): ESign | undefined {
+    return Object.values(ESign).find(sign => sign === value);
+  }
+
+  static NameOf(value: string): keyof typeof ESign | undefined {
+    return (Object.entries(ESign) as [keyof typeof ESign, string][])
+      .find(([_, v]) => v === value)?.[0];
+  }
+}
 
 export interface GameHistory { //TODO předělat ale i model
   gameID: number

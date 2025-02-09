@@ -4,7 +4,8 @@ import {
   ECalculationOperator,
   EGameProgress,
   EGameType,
-  EPlayerTurn, ESign,
+  EPlayerTurn,
+  ESign, ESignHelper,
   type GameCalculation,
   type GameState,
   type User
@@ -37,7 +38,7 @@ export class GameCalculationLearnService {
     for (let a = level.MinA; a <= level.MaxA; a++) {
       for (let b = level.MinB; b <= level.MaxB; b++) {
         for (const operator of [ESign.PLUS, ESign.MINUS]) {
-          // Generujeme obě varianty (a + b) a (b + a) pro obě operace
+          // Generujeme obě varianty (a + b) a (a - b) pro obě operace
           let result: number = 0;
           if (operator === ESign.PLUS) {
             result = a + b;
@@ -45,10 +46,16 @@ export class GameCalculationLearnService {
             result = a - b;
           }
 
+
           // Zkontrolujeme, zda výsledek spadá do daného rozsahu (pokud je definován)
+          const levelOperatorPlusAllowed = level.Operator === ECalculationOperator.PLUS || level.Operator === ECalculationOperator.PLUS_MINUS;
+          const levelOperatorMinusAllowed = level.Operator === ECalculationOperator.MINUS || level.Operator === ECalculationOperator.PLUS_MINUS;
+          const pushAllowed = operator === ESign.PLUS ? levelOperatorPlusAllowed : levelOperatorMinusAllowed;
+          logger.trace(' a = ' + a + ' b = ' + b +' Operator = ' + ESignHelper.NameOf(operator) + ' ALLOWED = ' + pushAllowed, '', levelOperatorPlusAllowed, levelOperatorMinusAllowed);
           if (
             (level.MinResult !== undefined && result >= level.MinResult) &&
-            (level.MaxResult !== undefined && result <= level.MaxResult)
+            (level.MaxResult !== undefined && result <= level.MaxResult) &&
+            pushAllowed
           ) {
             const eq: Calculation = {
               operandA: a,

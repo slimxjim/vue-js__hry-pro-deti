@@ -17,11 +17,13 @@ import { logger } from '@/services/Logger'
 import type { GcTime } from '@/types/GcTime'
 import { useStopwatch } from '@/composable/useStopwatch'
 import { usePuzzleImage } from '@/composable/usePuzzle'
+import { useLevelStore } from '@/stores/useLevelStore'
 
 export const useGameStore = defineStore('game', () => {
   const game = ref<GameCalculation | null>(null);
   const isGameActive = computed(() => game.value !== null);
   const authStore = useAuthStore();
+  const levelStore = useLevelStore();
   const user = computed<User | undefined | null>(() => authStore.user);
   const turnTimeFirst = ref<GcTime>({seconds: 0, milliseconds: 0, millisecondsTotal: 0});
   const turnTimeTotal = ref<GcTime>({seconds: 0, milliseconds: 0, millisecondsTotal: 0});
@@ -37,7 +39,7 @@ export const useGameStore = defineStore('game', () => {
   const dbTurnHistory = new DbCalculationCrudService<DoTurnHistory>('/turn_history.php'); //TODO move to service? split state with logic and DB logic?
 
   async function startGame(levelId: number) {
-    const level = await loadLevel(levelId); //TODO cache
+    const level = levelStore.level ? levelStore.level : await loadLevel(levelId); //TODO rework it - no ID no parameter just take it from the levelStore - handle level by levelStore and keep it synced in the game store..
 
     if (user.value && level) {
       game.value = GameCalculationLearnService.createGame(level, user.value);

@@ -1,3 +1,5 @@
+import { logger } from '@/services/Logger'
+
 export interface PuzzleImageModel {
   imageUrl: string,
   countPieces: number,
@@ -87,7 +89,7 @@ export class PuzzleRevealedState {
       }
       output += row.trim() + '\n';
     }
-    console.log(output);
+    logger.trace(output);
   }
 
   getMatrix(): boolean[][] {
@@ -98,7 +100,7 @@ export class PuzzleRevealedState {
         array[y][x] = this.isRevealed(x, y);
       }
     }
-    console.log(array);
+    logger.trace('puzzle matrix: ', '', array);
     this.printToConsole();
     return array;
   }
