@@ -41,8 +41,8 @@ export const useGameStore = defineStore('game', () => {
   async function startGame(levelId: number) {
     const level = levelStore.level ? levelStore.level : await loadLevel(levelId); //TODO rework it - no ID no parameter just take it from the levelStore - handle level by levelStore and keep it synced in the game store..
 
-    if (user.value && level) {
-      game.value = GameCalculationLearnService.createGame(level, user.value);
+    if (level) {
+      game.value = GameCalculationLearnService.createGame(level, user.value ?? undefined);
       game.value.gameState.playerOnTurn = EPlayerTurn.PLAYER;
       game.value.gameState.currentTurnIndexInGameScenario = 0;
       updateGameProgress();
@@ -97,11 +97,12 @@ export const useGameStore = defineStore('game', () => {
   }
 
   async function doAnswer(answer: number|undefined, playerOnTurn: EPlayerTurn) {
+    logger.info('do answer = ' + answer);
     if (game.value && game.value.gameState.gameProgress === EGameProgress.RUNNING) {
       stopTurnTimerTotal();
       //TODO move to service?
       const currCalc = getCurrentCalculation();
-      if (currCalc && user.value) {
+      if (currCalc) {
         const calcAnswer: CalculationAnswer = {
           answer: answer,
           answerTimeFirst: {...turnTimeFirst.value},
@@ -111,6 +112,7 @@ export const useGameStore = defineStore('game', () => {
           device: getDeviceType(),
           isCorrect: (currCalc.correctAnswer === answer)
         }
+        
         if (user.value && game.value.level) {
           await saveAnswer(user.value, game.value.level, calcAnswer)
         }
