@@ -32,7 +32,8 @@ export class GameCalculationLearnService {
   }
 
   static generateScenario(level: CalculationLevel, isShuffled?: boolean): Calculation[] {
-    const scenario: Calculation[] = [];
+    //FIXME - improve performance for big intervals like: <0,100>+-<0,100>=<0,100>
+    let scenario: Calculation[] = [];
     logger.trace('generating scenario...', '', level);
 
     for (let a = level.MinA; a <= level.MaxA; a++) {
@@ -70,9 +71,15 @@ export class GameCalculationLearnService {
         }
       }
     }
-    if (isShuffled) {
+
+    if (isShuffled || scenario.length > 100) {
       this.shuffle(scenario);
     }
+    if (scenario.length > 100) {
+      logger.info('Scenario would be toooo big (' + scenario.length + ') and will be reduced to max 99');
+      scenario = scenario.slice(0, 99);
+    }
+
     logger.trace('Generated scenario:','',scenario);
     return scenario;
   }
