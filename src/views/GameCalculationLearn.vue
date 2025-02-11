@@ -100,7 +100,7 @@
                 ">
                 <v-col><v-btn  class="w-100" @click="openLevelDialog()" >LEVEL ?</v-btn></v-col>
                 <v-col><v-btn  class="w-100" @click="shuffleScenario()" color="#ABF3FFFF">Mix</v-btn></v-col>
-                <v-col><v-btn  class="w-100" @click="maxCalculations()" color="#FFFFAFFF">Max příkladů ?</v-btn></v-col>
+                <v-col><v-btn  class="w-100" @click="doMaxCalculations()" color="#FFFFAFFF">Max příkladů ?</v-btn></v-col>
                 <v-col><v-text-field density="compact" style="width: 80px" v-model="maxCalculationsNumber" label="" type="number" min="1" step="1"/></v-col>
               </v-row>
             </div>
@@ -253,14 +253,23 @@ async function startGame() {
   resetTimerAndPause();
 }
 
+function doPauseGame() {
+  gameStore.pauseGame();
+  isPaused.value = true;
+}
+
+function doResumeGame() {
+  gameStore.resumeGame();
+  isPaused.value = false;
+}
+
 function togglePause() {
   if (!isPaused.value) {
-    gameStore.pauseGame();
+    doPauseGame();
   }
   else {
-    gameStore.resumeGame();
+    doResumeGame();
   }
-  isPaused.value = !isPaused.value;
 }
 
 function doResetGame() {
@@ -268,21 +277,29 @@ function doResetGame() {
   if(game.value && game.value.gameScenario?.length > 0) {
     game.value.gameScenario = GameCalculationLearnService.generateScenario(game.value.level, false);
   }
-  isPaused.value = false;
+  backToStart();
+}
+
+function backToStart() {
+  gameStore.resetGame();
   preparePuzzle();
+  doPauseGame();
 }
 
 function shuffleScenario() {
   if(game.value && game.value.gameScenario?.length > 0) {
     game.value.gameScenario = GameCalculationLearnService.shuffle(game.value.gameScenario)
   }
-  gameStore.resetGame();
-  isPaused.value = false;
-  preparePuzzle();
-  resetTimerAndPause();
+  backToStart();
 }
 
-async function maxCalculations() {
+function validateMaxCalculation() {
+  if (game.value && game.value.gameScenario?.length < maxCalculationsNumber.value) {
+    maxCalculationsNumber.value = game.value.gameScenario?.length;
+  }
+}
+
+async function doMaxCalculations() {
   console.log('max calculations');
   const count = maxCalculationsNumber.value;
   if (!count) return null;
@@ -290,7 +307,11 @@ async function maxCalculations() {
     const previousScenarioLength = game.value.gameScenario?.length ?? 0;
     const alreadyAnswered = game.value?.player?.answers?.length ?? 0;
     const backupPuzzleModel = gameStore.usePuzzle.puzzleImageModel;
+
     game.value.gameScenario = GameCalculationLearnService.generateScenario(game.value.level, false).slice(0, count);
+
+    validateMaxCalculation();
+
     if (count > alreadyAnswered && count < previousScenarioLength && backupPuzzleModel?.revealedState) {
       preparePuzzle();
       gameStore.usePuzzle.revealCount(backupPuzzleModel?.revealedState.revealedPiecesCount);
@@ -299,24 +320,24 @@ async function maxCalculations() {
       gameStore.resetGame();
       preparePuzzle();
     }
-    isPaused.value = false;
   }
   resetTimerAndPause();
 }
 
 function resetTimerAndPause() {
+  console.trace('Reseting and pause...');
   gameStore.resetGameTimer();
-  gameStore.pauseGame();
-  isPaused.value = true;
+  doPauseGame();
 }
 
-async function selectLevel() {
+async function doSelectLevel() {
   const id = await changeLevel();
   console.log('selected level id: ', id);
   if (id != null) {
     doResetGame();
   }
   resetTimerAndPause();
+  validateMaxCalculation();
 }
 
 watch(level, (newLevel) => {
@@ -324,9 +345,10 @@ watch(level, (newLevel) => {
     game.value.level = newLevel
     doResetGame();
     resetTimerAndPause();
+    validateMaxCalculation();
   }
   else if (!newLevel) {
-    selectLevel();
+    doSelectLevel();
     if (dialogRef.value) {
       dialogRef.value.isOpen = false; // ✅ Otevře dialog
     }

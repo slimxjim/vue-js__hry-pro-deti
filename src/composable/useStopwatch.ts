@@ -57,6 +57,11 @@ export function useStopwatch() {
         }, 10); // Aktualizuje každých 10 ms
       }
 
+      function isRunning(): boolean {
+        return timer != null && timer > 0;
+
+      }
+
       // Funkce pro zastavení stopek
       function stop(): number {
         const timeResult = timer ?? -1;
@@ -117,6 +122,6 @@ export function useStopwatch() {
       }, 10); // Aktualizuje každých 10 ms
     }
 
-    return { time, start, stop, stopAndClear, pause, resume, newStart };
+    return { time, start, isRunning, stop, stopAndClear, pause, resume, newStart };
 }
 

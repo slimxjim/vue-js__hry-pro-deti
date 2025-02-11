@@ -197,13 +197,46 @@ export const useGameStore = defineStore('game', () => {
     updateGameProgress();
   }
 
+  function stopWatchStart() {
+    logger.trace('StopWatch: stopWatchStart');
+    if (stopWatchFirst.isRunning() || stopWatchTotal.isRunning()) {
+      stopWatchStopAndClear();
+    }
+    stopWatchFirst.start();
+    stopWatchTotal.start();
+  }
+
+  function stopWatchPause() {
+    logger.trace('StopWatch: stopWatchPause');
+    stopWatchFirst.pause();
+    stopWatchTotal.pause();
+  }
+
+  function stopWatchResume() {
+    logger.trace('StopWatch: stopWatchResume');
+    stopWatchFirst.resume();
+    stopWatchTotal.resume();
+  }
+
+  function stopWatchStop() {
+    logger.trace('StopWatch: stopWatchStop');
+    stopWatchFirst.stop();
+    stopWatchTotal.stop();
+  }
+
+  function stopWatchStopAndClear() {
+    logger.trace('StopWatch: stopWatchStopAndClear');
+    stopWatchFirst.stopAndClear();
+    stopWatchTotal.stopAndClear();
+  }
+
   function pauseGame() {
     if (game.value) {
+      console.log(game.value.gameState.gameProgress);
       if (game.value.gameState.gameProgress === EGameProgress.RUNNING) {
         game.value.gameState.gameProgress = EGameProgress.PAUSED;
-        stopWatchFirst.pause();
-        stopWatchTotal.pause();
       }
+      stopWatchPause()
     }
   }
 
@@ -211,18 +244,13 @@ export const useGameStore = defineStore('game', () => {
     if (game.value) {
       if (game.value.gameState.gameProgress === EGameProgress.PAUSED) {
         game.value.gameState.gameProgress = EGameProgress.RUNNING;
-        stopWatchFirst.resume();
-        stopWatchTotal.resume();
+        stopWatchResume();
       }
     }
   }
 
   function resetGameTimer() {
-    stopWatchFirst.stopAndClear();
-    stopWatchTotal.stopAndClear();
-
-    stopWatchFirst.start();
-    stopWatchTotal.start();
+    stopWatchStart();
   }
 
   function resetGame() {
@@ -239,17 +267,13 @@ export const useGameStore = defineStore('game', () => {
     if (game.value) {
       game.value.gameState.gameProgress = EGameProgress.LEAVED_NOT_FINISHED;
     }
-    stopWatchFirst.stop();
-    stopWatchTotal.stop();
+    stopWatchStopAndClear();
     game.value = null;
   }
 
   function startTurnTimer() {
     if (game.value && game.value.gameState.gameProgress === EGameProgress.RUNNING) {
-      stopWatchFirst.stop();
-      stopWatchTotal.stop();
-      stopWatchFirst.start();
-      stopWatchTotal.start();
+      stopWatchStart();
       turnTimeFirst.value = stopWatchFirst.time.value;
       turnTimeTotal.value = stopWatchTotal.time.value;
     }
@@ -271,8 +295,7 @@ export const useGameStore = defineStore('game', () => {
     if (game.value && game.value.gameState.gameProgress === EGameProgress.RUNNING) {
       console.log('continueAnswering');
       const newStartTime = stopWatchTotal.time.value.seconds * 1000 + stopWatchTotal.time.value.milliseconds;
-      stopWatchFirst.stop();
-      stopWatchTotal.stop();
+      stopWatchStop()
       stopWatchFirst.newStart(newStartTime);
       stopWatchTotal.newStart(newStartTime);
     }
