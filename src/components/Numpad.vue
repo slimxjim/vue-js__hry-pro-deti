@@ -59,6 +59,13 @@ function clearAll() {
 const handleKeyPress = (event: KeyboardEvent) => {
   const key = event.key;
   const num = parseInt(key, 10);
+
+  const activeElement = document.activeElement as HTMLElement;
+  if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable)) {
+    console.trace('ignoring key event for input or textarea');
+    return;
+  }
+
   if (!isNaN(num) && num >= 0 && num <= 9) {
     appendNumber(num); // Call appendNumber if the key pressed is a number
   }

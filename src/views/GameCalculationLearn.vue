@@ -413,6 +413,11 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
   const num = parseInt(event.key, 10);
   if (isPaused.value && !isNaN(num) && num >= 0 && num <= 9) {
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable)) {
+      console.trace('ignoring key event for input or textarea');
+      return;
+    }
     togglePause();
   }
   return {
